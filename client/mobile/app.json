@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "mobile",
+    "slug": "mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/agapay/logo/logo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/agapay/logo/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/agapay/logo/logo.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d55aad3b-de26-4629-9049-253b834665f4"
+      }
+    },
+    "owner": "paulflancia01"
+  }
+}
