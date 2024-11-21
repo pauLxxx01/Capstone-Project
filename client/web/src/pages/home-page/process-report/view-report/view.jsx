@@ -84,7 +84,7 @@ const viewReports = () => {
   }, [id]);
 
   const handleUpdate = async (id) => {
-    console.log("Navigating with user info:", userInfo);
+    console.log("Navigating with user info:", userInfo.account_id);
 
     try {
       // Extract user information outside the request for better readability
@@ -95,6 +95,14 @@ const viewReports = () => {
         percentage: 50, // No need for quotes if it's a number
       };
 
+      axios.post(`https://app.nativenotify.com/api/indie/notification`, {
+        subID: `${userInfo.account_id}`,
+        appId: 24898,
+        appToken: '760ZeHdkeVxNNpUDQg7hEN',
+        title: `AGAPAY`,
+        message: `Hi ${userInfo.name}!\nAdmin already accepted your report and they will call you after a while!  `,
+      
+   });
       // Use template literals for the URL
       const apiEndpoint = `/user/message/update/${id}`;
 
@@ -117,9 +125,7 @@ const viewReports = () => {
   const handleClose = () => {
     setOpen(false);
   };
-  const handleConfirm = () => {
-    console.log("hello");
-  };
+
 
   if (loading) return <Loading />;
   if (error) return <div>⚠️{error}</div>;

@@ -14,15 +14,17 @@ import {
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { registerIndieID, unregisterIndieDevice } from 'native-notify';
 import axios from "axios";
+
 import SubmitButton from "../../../components/SubmitButton";
 import InputBox from "../../../components/TextFieldBox";
 import { AuthContext } from "../../../context/authContext";
-import { createTwoButtonAlert } from "../../../components/alert/Alert";
+
 
 const { width, height } = Dimensions.get("window");
 
-const Login = ({ navigation }) => {
+export default function Login  ({ navigation })  {
   //global state
   const [state, setState] = useContext(AuthContext);
   const [error, setError] = useState("");
@@ -42,12 +44,14 @@ const Login = ({ navigation }) => {
         setLoading(false); // Stop loading
         return;
       }
+      const user_id = userId.toUpperCase()
       const {data} = await axios.post(`/mobile/user/login`, {
-        account_id: userId.toUpperCase(),
+        account_id: user_id,
         password,
       });
+      registerIndieID(`${user_id}`, 24898, '760ZeHdkeVxNNpUDQg7hEN');
 
-      console.log(data);
+      console.log("data: ", data);
       setState(data);
       await AsyncStorage.setItem("@auth", JSON.stringify(data));
       Alert.alert("Success", data.message || "Login successful!");
@@ -208,4 +212,3 @@ const styles = StyleSheet.create({
     marginBottom: height * 0.01,
   },
 });
-export default Login;

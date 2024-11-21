@@ -31,6 +31,7 @@ import {
   getFullScreenHeight,
   statusBarSize,
 } from "./../../../components/getFullScreen";
+import axios from "axios";
 
 export default function Homepage({ navigation }) {
   const [selectedAlert, setSelectedAlert] = useState(null);
@@ -151,6 +152,17 @@ export default function Homepage({ navigation }) {
   const handleCloseModal = () => {
     setExitApp(false); // Close the modal
   };
+
+  const handleSend = () => {
+    axios.post(`https://app.nativenotify.com/api/indie/notification`, {
+      subID: `${state.user.account_id}`,
+      appId: 24898,
+      appToken: '760ZeHdkeVxNNpUDQg7hEN',
+      title: `Agapay`,
+      message: `Hi ${state.user.name}!\nAdmin already accepted your report and they will call you After a while!  `,
+      
+ });
+  }
   return (
     <SafeAreaView style={styles.container} {...panResponder.panHandlers}>
       <Animated.View
@@ -240,8 +252,12 @@ export default function Homepage({ navigation }) {
           </ScrollView>
         </View>
 
+       
         {/* emergency card list */}
         <View style={styles.bottomSection}>
+        <TouchableOpacity onPress={() => handleSend()}>
+  <Text style={styles.sectionTitle}>send</Text>
+</TouchableOpacity>
           <Text style={styles.sectionTitle}>HOW CAN I HELP YOU?</Text>
           <View style={styles.grid}>
             {emergencies.map((item) => (

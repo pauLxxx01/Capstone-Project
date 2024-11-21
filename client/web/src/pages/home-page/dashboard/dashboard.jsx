@@ -160,7 +160,7 @@ console.log(socket);
    whileInView="show"
    className="title"
  >
-        <h1>Data Length: {messages.length}</h1>
+      
    <h1>DASHBOARD</h1>
  </motion.div>
 

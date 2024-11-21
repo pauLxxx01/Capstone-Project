@@ -43,22 +43,22 @@ label {
   padding: 24px;
 
 }
-
+.input{
+  width: 100%;
+    margin: 0px;
+}
 select{
-
+  cursor: pointer;
+  width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
   transition: border-color 0.3s;
   &:focus {
- 
     border-color: #4CAF50; 
-    
   }
-}
-.radio-group{
-  display: flex;
-  gap: 18px;
+ 
+
 }
 
 
@@ -69,11 +69,6 @@ select{
 
 .form-group {
   margin: 8px 0px; // Space between form groups
-
-  input{
-    width: 100%;
-      margin: 0px;
-  }
 }
 
 .submit-button {

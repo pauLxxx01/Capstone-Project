@@ -11,6 +11,8 @@ function Modal({ setOpenModal, title, data, users }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
+  console.log(data, "data")
+  console.log(users, "users")
   // Filter users based on search term and message IDs
   // Filter users based on search term and matching message IDs (reversed logic)
   const filteredUsers = data
@@ -22,7 +24,7 @@ function Modal({ setOpenModal, title, data, users }) {
             .toString()
             .toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-            user.userId
+            user.account_id
               .toString()
               .toLowerCase()
               .includes(searchTerm.toLowerCase()) ||
@@ -32,7 +34,15 @@ function Modal({ setOpenModal, title, data, users }) {
               .includes(searchTerm.toLowerCase()) ||
             (datas.createdAt &&
               datas.createdAt.toString().includes(searchTerm)) ||
-            (datas.respond && datas.respond.toString().includes(searchTerm.toLowerCase())))
+            (datas.respond && 
+              datas.respond
+              .toString()
+              .includes(searchTerm.toLowerCase())
+            ) || (datas.emergency &&
+               datas.emergency
+               .toString()
+               .includes(searchTerm.toLowerCase())
+              ))
       )
     )
     .map((datas) => {
@@ -44,6 +54,7 @@ function Modal({ setOpenModal, title, data, users }) {
         createdAt: datas ? datas.createdAt : null,
         messageID: datas ? datas._id : null,
         respond: datas? datas.respond : null,
+        emergency: datas? datas.emergency : null
       };
     });
 
@@ -66,7 +77,7 @@ function Modal({ setOpenModal, title, data, users }) {
   const handleRowClick = (data) => {
     if (data.respond === "in-progress") {
       console.log("Received " + data.respond);
-      navigate(`/home/report/in-progress/${data.messageID}`);
+      navigate(`/home/report/in-progress/${data.messageID}`, {state: {id: data}});
     } else {
       navigate(`/home/report/${data.messageID}`);
     }
@@ -115,7 +126,7 @@ function Modal({ setOpenModal, title, data, users }) {
                     <tr key={`${row._id}-${index}`}>
                       {/* Combine `_id` with `index` for uniqueness */}
                       <td>{row.name}</td>
-                      <td>{row.userId}</td>
+                      <td>{row.account_id}</td>
                       <td>{row.department}</td>
                       <td>
                         {row.createdAt

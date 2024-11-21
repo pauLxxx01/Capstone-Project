@@ -11,7 +11,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import * as MediaLibrary from "expo-media-library";
 
-import {
+import { 
   getFullScreenHeight,
   statusBarSize,
 } from "../../components/getFullScreen";

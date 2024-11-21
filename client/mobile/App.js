@@ -18,10 +18,26 @@ import Notification from "./screens/menu-bar/Notification";
 import { AuthProvider } from "./context/authContext";
 import About from "./screens/menu-bar/About";
 import FeedbackComponent from "./screens/menu-bar/Feedback";
+
 import registerNNPushToken from 'native-notify';
+import * as Notifications from 'expo-notifications';
+import React, { useEffect } from "react";
 
 export default function App() {
-  registerNNPushToken(24898, '760ZeHdkeVxNNpUDQg7hEN');
+
+    const checkPermissions = async () => {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== 'granted') {
+        await Notifications.requestPermissionsAsync();
+      }
+    };
+
+    checkPermissions();
+
+    // Register push token for NativeNotify
+    registerNNPushToken(24898, '760ZeHdkeVxNNpUDQg7hEN');
+ 
+
   const Stack = createNativeStackNavigator();
 
   return (

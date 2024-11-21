@@ -9,7 +9,8 @@ const Report = ({ users, messages }) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [filterStatus, setFilterStatus] = useState("all"); // State to manage filter
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [sortDirection, setSortDirection] = useState("desc"); 
   const recordsPerPage = 5;
 
   const count = (data) => {
@@ -37,11 +38,21 @@ const Report = ({ users, messages }) => {
   const handleRowClick = (data) => {
     if (data.respond === "in-progress") {
       console.log("Received " + data.respond);
-      navigate(`/home/report/in-progress/${data.messageID}`);
-    } else {
+      navigate(`/home/report/in-progress/${data.messageID}`, {
+        state: { id: data },
+      });
+    } else if (data.respond === "unused") {
       navigate(`/home/report/${data.messageID}`);
+    } else {
+      navigate(`/home/report`);
     }
   };
+
+  const handleDateSortToggle = () => {
+    setSortDirection((prevDirection) => (prevDirection === "desc" ? "asc" : "desc"));
+  };
+
+  console.log(users)
 
   const filteredUsers = useMemo(() => {
     return messages
@@ -53,7 +64,7 @@ const Report = ({ users, messages }) => {
                 .toString()
                 .toLowerCase()
                 .includes(searchTerm.toLowerCase()) ||
-                user.userId
+                user.account_id
                   .toString()
                   .toLowerCase()
                   .includes(searchTerm.toLowerCase()) ||
@@ -90,14 +101,21 @@ const Report = ({ users, messages }) => {
           respond: data.respond,
           emergency: data.emergency,
         };
-      });
-  }, [messages, users, searchTerm]);
+      })
+      .sort((a, b) =>
+        sortDirection === "desc"
+          ? new Date(b.createdAt) - new Date(a.createdAt)
+          : new Date(a.createdAt) - new Date(b.createdAt)
+      ); 
+
+    return sortedUsers;
+  },  [messages, users, searchTerm, sortDirection]); 
 
   // Filter based on selected status
   const getFilteredUsersByStatus = () => {
     if (filterStatus === "all") return filteredUsers;
     return filteredUsers.filter((user) => user.respond === filterStatus);
-  };
+  }
 
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
@@ -105,6 +123,18 @@ const Report = ({ users, messages }) => {
   const totalPages = Math.ceil(
     getFilteredUsersByStatus().length / recordsPerPage
   );
+
+  const handlePageChange = (page) => setCurrentPage(page);
+
+  const prePage = (e) => {
+    e.preventDefault();
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const nextPage = (e) => {
+    e.preventDefault();
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
 
   return (
     <div className="report">
@@ -176,7 +206,7 @@ const Report = ({ users, messages }) => {
       >
         <input
           type="search"
-          value={searchTerm}
+          value={searchTerm.toString()}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search..."
         />
@@ -188,10 +218,22 @@ const Report = ({ users, messages }) => {
         whileInView={"show"}
         className="user-table"
       >
-        <thead>
+      <thead>
           <tr>
             {headerTableGeneral.map((header, index) => (
-              <th key={index}>{header.Label}</th>
+             <th
+             key={index}
+             onClick={
+               header.Label === "DATE" ? handleDateSortToggle : undefined
+             }
+             style={{
+               cursor: header.Label === "DATE" ? "pointer" : "default",
+             }}
+           >
+             {header.Label}
+             {header.Label === "DATE" &&
+               (sortDirection === "desc" ? " ↑" : " ↓")}
+           </th>
             ))}
           </tr>
         </thead>
@@ -203,7 +245,7 @@ const Report = ({ users, messages }) => {
               onClick={() => handleRowClick(data)}
             >
               <td>{data.name}</td>
-              <td>{data.userId}</td>
+              <td>{data.account_id}</td>
               <td>{data.department}</td>
               <td>{data.emergency}</td>
               <td>{data.createdAt || ""}</td>
@@ -224,17 +266,42 @@ const Report = ({ users, messages }) => {
       </motion.table>
 
       {totalPages > 1 && (
-        <div className="pagination">
-          {[...Array(totalPages).keys()].map((pageNumber) => (
-            <Link
-              key={pageNumber}
-              to={`/home/report?page=${pageNumber + 1}`}
-              className={pageNumber + 1 === currentPage ? "active" : ""}
-            >
-              {pageNumber + 1}
-            </Link>
-          ))}
-        </div>
+        <motion.div
+        variants={fadeIn("right", 0.1)}
+        initial="hidden"
+        whileInView={"show"}
+      
+         className="containerNav">
+          <nav>
+            <ul className="pagination-modal">
+              {currentPage > 1 && (
+                <li className="page-items">
+                  <button className="page-links" onClick={prePage}>
+                    Previous
+                  </button>
+                </li>
+              )}
+              {Array.from({ length: totalPages }, (_, i) => (
+                <li
+                  key={i}
+                  onClick={() => handlePageChange(i + 1)}
+                  className={`page-items ${
+                    currentPage === i + 1 ? "active" : ""
+                  }`}
+                >
+                  <button className="page-links">{i + 1}</button>
+                </li>
+              ))}
+              {currentPage < totalPages && (
+                <li className="page-items">
+                  <button className="page-links" onClick={nextPage}>
+                    Next
+                  </button>
+                </li>
+              )}
+            </ul>
+          </nav>
+        </motion.div>
       )}
     </div>
   );
