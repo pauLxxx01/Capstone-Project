@@ -12,10 +12,9 @@ export const SocketProvider = ({ children }) => {
     const storedToken = localStorage.getItem("authToken");
     if (storedToken) setToken(storedToken);
   }, []);
-
   // Establish the socket connection when token is available
   useEffect(() => {
-    if (token && !socket) {
+    if (token) {
       const newSocket = io("http://localhost:8080", {
         query: { token },
       });
@@ -25,7 +24,7 @@ export const SocketProvider = ({ children }) => {
         newSocket.disconnect();
       };
     }
-  }, [token]); // Only depend on `token`
+  }, [token]); 
 
   // Function to handle login and store the token
   const handleLogin = (newToken) => {

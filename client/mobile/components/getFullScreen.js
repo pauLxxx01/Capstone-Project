@@ -1,4 +1,5 @@
-import { Dimensions } from "react-native";
+import { Dimensions, Platform, StatusBar } from "react-native";
+import { Constants } from 'expo-constants';
 
 const logDeviceDimensions = (statusBarHeight, fullScreenHeight) => {
   console.log(
@@ -15,7 +16,9 @@ const getFullScreenHeight = () => {
 
 const statusBarSize = () => {
   const statusBarHeight =
-    Dimensions.get("screen").height - Dimensions.get("window").height;
+   Platform.OS === "ios" ? Constants.statusBarHeight : StatusBar.currentHeight;
   return statusBarHeight;
 };
+
+
 export { getFullScreenHeight, statusBarSize };

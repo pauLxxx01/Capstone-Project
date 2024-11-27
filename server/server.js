@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 const colors = require("colors");
 const morgan = require("morgan");
 const connectDb = require('./config/db')
-const initializeSocket = require("./sockets/socket");
+const { initializeSocket } = require("./sockets/socket");
 
 //rest object
 const app = express();
@@ -22,6 +22,7 @@ app.use(morgan('dev'));
 app.use(express.static('public'))
 
 
+
 // Define port
 const PORT = process.env.PORT || 8080;
 
@@ -37,4 +38,11 @@ app.use("/admin/auth", require("./routes/routes"));
 // Start the server
 server.listen(PORT, () => {
   console.log(`Server running on ${PORT}`.bgCyan.white);
+});
+
+process.on('SIGINT', () => {
+  server.close(() => {
+      console.log('Server closed');
+      process.exit(0);
+  });
 });

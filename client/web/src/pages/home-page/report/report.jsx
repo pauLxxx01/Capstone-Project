@@ -4,9 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { fadeIn, zoomIn } from "../../../variants";
 import { headerTableGeneral } from "../../../newData";
+import Loading from "../../../components/loading/loading";
 
 const Report = ({ users, messages }) => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState("all");
@@ -52,7 +56,6 @@ const Report = ({ users, messages }) => {
     setSortDirection((prevDirection) => (prevDirection === "desc" ? "asc" : "desc"));
   };
 
-  console.log(users)
 
   const filteredUsers = useMemo(() => {
     return messages
@@ -135,6 +138,10 @@ const Report = ({ users, messages }) => {
     e.preventDefault();
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
+
+  if (loading) return <Loading />;
+
+  if (error) return <p>{error}</p>;
 
   return (
     <div className="report">
@@ -264,45 +271,97 @@ const Report = ({ users, messages }) => {
           ))}
         </tbody>
       </motion.table>
-
       {totalPages > 1 && (
-        <motion.div
-        variants={fadeIn("right", 0.1)}
-        initial="hidden"
-        whileInView={"show"}
-      
-         className="containerNav">
-          <nav>
-            <ul className="pagination-modal">
-              {currentPage > 1 && (
-                <li className="page-items">
-                  <button className="page-links" onClick={prePage}>
-                    Previous
-                  </button>
+  <motion.div
+    variants={fadeIn("right", 0.1)}
+    initial="hidden"
+    whileInView={"show"}
+    className="containerNav"
+  >
+    <nav>
+      <ul className="pagination-modal">
+        {currentPage > 1 && (
+          <li className="page-items">
+            <button className="page-links" onClick={prePage}>
+              Previous
+            </button>
+          </li>
+        )}
+        {(() => {
+          const pageNumbers = [];
+          const maxVisiblePages = 3; // Adjust for your desired truncation window
+          const halfVisible = Math.floor(maxVisiblePages / 2);
+
+          let startPage = Math.max(1, currentPage - halfVisible);
+          let endPage = Math.min(totalPages, currentPage + halfVisible);
+
+          if (currentPage <= halfVisible) {
+            endPage = Math.min(maxVisiblePages, totalPages);
+          }
+          if (currentPage + halfVisible >= totalPages) {
+            startPage = Math.max(1, totalPages - maxVisiblePages + 1);
+          }
+
+          if (startPage > 1) {
+            pageNumbers.push(
+              <li key="first" className="page-items">
+                <button className="page-links" onClick={() => handlePageChange(1)}>
+                  1
+                </button>
+              </li>
+            );
+            if (startPage > 2) {
+              pageNumbers.push(
+                <li key="start-ellipsis" className="page-items ellipsis">
+                  ...
                 </li>
-              )}
-              {Array.from({ length: totalPages }, (_, i) => (
-                <li
-                  key={i}
-                  onClick={() => handlePageChange(i + 1)}
-                  className={`page-items ${
-                    currentPage === i + 1 ? "active" : ""
-                  }`}
-                >
-                  <button className="page-links">{i + 1}</button>
+              );
+            }
+          }
+
+          for (let i = startPage; i <= endPage; i++) {
+            pageNumbers.push(
+              <li
+                key={i}
+                onClick={() => handlePageChange(i)}
+                className={`page-items ${currentPage === i ? "active" : ""}`}
+              >
+                <button className="page-links">{i}</button>
+              </li>
+            );
+          }
+
+          if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+              pageNumbers.push(
+                <li key="end-ellipsis" className="page-items ellipsis">
+                  ...
                 </li>
-              ))}
-              {currentPage < totalPages && (
-                <li className="page-items">
-                  <button className="page-links" onClick={nextPage}>
-                    Next
-                  </button>
-                </li>
-              )}
-            </ul>
-          </nav>
-        </motion.div>
-      )}
+              );
+            }
+            pageNumbers.push(
+              <li key="last" className="page-items">
+                <button className="page-links" onClick={() => handlePageChange(totalPages)}>
+                  {totalPages}
+                </button>
+              </li>
+            );
+          }
+
+          return pageNumbers;
+        })()}
+        {currentPage < totalPages && (
+          <li className="page-items">
+            <button className="page-links" onClick={nextPage}>
+              Next
+            </button>
+          </li>
+        )}
+      </ul>
+    </nav>
+  </motion.div>
+)}
+
     </div>
   );
 };

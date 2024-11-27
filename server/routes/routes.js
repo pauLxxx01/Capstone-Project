@@ -19,6 +19,7 @@ const {
   updateAccounts,
   loginController,
   getSpecificParent,
+  getToken,
 } = require("../controller/usersController");
 
 //for messages
@@ -43,6 +44,8 @@ const { verifyToken, sendingToken } = require("../controller/otpController");
 //for image
 const path = require("path");
 const multer = require("multer");
+const {sendNotification, sendReportToAdmin}  = require("../controller/reportController");
+const { sendPush } = require("../controller/notificationController");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -69,6 +72,7 @@ router.get("/user/getUser", getUser);
 router.get("/user/account/specific/:id", getSpecificUser);
 router.delete("/user/delete/:id", deleteUser);
 
+
 //Routes for user (mobile)
 router.post("/mobile/user/login", loginController);
 router.post(
@@ -76,9 +80,11 @@ router.post(
   uploads.single("img"),
   ReportMessage
 );
+router.post('/send-report', uploads.single("img"), sendReportToAdmin)
 
 //Routes for update (user and parent)
 router.put("/userUpdate/parentUpdate/:id", updateAccounts);
+router.put('/save-token/:id', getToken)
 
 //Routes for (parents)
 router.get("/user/parent/getParent", getParent);
@@ -108,5 +114,9 @@ router.post("/admin/responder/register", registerResponder);
 router.get("/admin/responder/getResponder", getResponder);
 router.put("/admin/responder/update/:id", updateResponder);
 router.delete("/admin/responder/delete/:id", deleteResponder);
+
+
+router.post("/send-notification", sendNotification);
+router.post('/push-notification', sendPush);
 
 module.exports = router;

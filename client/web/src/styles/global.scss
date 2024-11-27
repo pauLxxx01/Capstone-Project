@@ -73,12 +73,14 @@
 }
 
 .menuDrawer.open {
-  transform: translateX(0); /* Slide in */
+  transform: translateX(0); 
   opacity: 1;
+  width: 100%;
+  padding: 0 32px;
 }
 
 .menuDrawer.closed {
-  transform: translateX(-100%); /* Slide out */
+  transform: translateX(-100%); 
   opacity: 0;
 }
 

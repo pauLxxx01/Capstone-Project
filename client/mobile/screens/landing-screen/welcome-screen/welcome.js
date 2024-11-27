@@ -11,17 +11,15 @@ import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const statusBarHeight =
-  Dimensions.get("screen").height - Dimensions.get("window").height;
-const fullScreenHeight = Dimensions.get("screen").height;
+import { getFullScreenHeight, statusBarSize } from "../../../components/getFullScreen";
 
 console.log(
-  `Device Dimensions: \n- Status bar Height: ${statusBarHeight.toFixed(
-    2
-  )}\n- Screen Height: ${Dimensions.get("screen").height.toFixed(
-    2
-  )}\n- Full Screen Height: ${fullScreenHeight.toFixed(2)}`
+`
+Device Dimensions:
+- Status bar Height: ${statusBarSize().toFixed(2)}
+- Screen Height: ${Dimensions.get("screen").height.toFixed(2)}
+- Full Screen Height: ${getFullScreenHeight().toFixed(2)}
+`
 );
 
 const Welcome = () => {
@@ -81,7 +79,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    height: fullScreenHeight,
+    height: getFullScreenHeight(),
   },
   logo: {
     width: 350,

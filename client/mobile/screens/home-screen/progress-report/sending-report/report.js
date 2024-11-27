@@ -40,29 +40,21 @@ const Progress = ({ navigation, route }) => {
 
   const [loading, setLoading] = useState(false);
   const reminders = Object.values(reminder);
-  console.log("Reminders: ", reminders);
-
-  console.log("NAME -> ", name, img, reminder);
-  console.log("LOCAL INFO: ", state.user);
-  console.log("User ._id: ", user_Id);
 
   useEffect(() => {
     if (route.params?.photoUri) {
       setCapturedPhotos((prevPhotos) => [...prevPhotos, route.params.photoUri]);
       setFile(route.params?.photoUri);
 
-      console.log("Captured item: ", route.params.photoUri);
       const file = route.params.photoUri.split("/").pop();
       console.log("Filename: ", file);
     }
   }, [route.params?.photoUri]);
-  console.log("\n\nSELECTED FILE: ", file);
   const removePhoto = (index) => {
     try {
       setCapturedPhotos((prevPhotos) =>
         prevPhotos.filter((_, i) => i !== index)
       );
-      console.log("Delete item: ", capturedPhotos);
     } catch (error) {
       console.error(error);
     }
@@ -96,7 +88,7 @@ const Progress = ({ navigation, route }) => {
         setLoading(false);
         return;
       }
-      const percentage = "25"
+      const percentage = "25";
       const formData = new FormData();
       formData.append("emergency", name);
       formData.append("location", selectedValue);
@@ -115,17 +107,20 @@ const Progress = ({ navigation, route }) => {
           "Content-Type": "multipart/form-data",
         },
       };
-      await axios.post("/mobile/user/upload/message", formData, config);
+      await axios.post("/send-notification", {
+        message: `${state.user.account_id} reported for ${name}`,
+      });
+      await axios.post("/send-report", formData, config);
       Alert.alert(
-        'SOS Sent!', // Title
-        'Your emergency report has been sent.', // Message
+        "SOS Sent!", // Title
+        "Your emergency report has been sent.", // Message
         [
           {
-            text: 'OK',
-            onPress: () => navigation.navigate('Homepage'),
+            text: "OK",
+            onPress: () => navigation.navigate("Homepage"),
           },
         ],
-        { cancelable: false } // Prevent dismissing by tapping outside the alert
+        { cancelable: false } 
       );
     } catch (error) {
       console.log(error);
@@ -155,29 +150,34 @@ const Progress = ({ navigation, route }) => {
           </View>
         </View>
         {/* input reports */}
-        <View
+        <ScrollView
           keyboardShouldPersistTaps="handled"
           style={styles.actionsContainer}
         >
           {/* camera icon */}
-          <View style={styles.camcontainer}>
-            <TouchableOpacity
-              style={styles.cameraIconButton}
-              onPress={() =>
-                navigation.navigate("Camera", { name, img, ...reminder })
-              }
-            >
-              <Icon name="camera" size={45} color="#fff" />
-            </TouchableOpacity>
-          </View>
+
+          {capturedPhotos.length < 1 && ( // Only show the icon if there's not exactly one photo
+            <View style={styles.camcontainer}>
+              <TouchableOpacity
+                style={styles.cameraIconButton}
+                onPress={() =>
+                  navigation.navigate("Camera", { name, img, ...reminder })
+                }
+              >
+                <Icon name="camera" size={45} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          )}
 
           {/* camera display */}
 
-          <ScrollView
+          <View
             horizontal
             style={[
               styles.imageScrollView,
-              capturedPhotos.length <= 0 ? { opacity: 0.2 } : { opacity: 1 },
+              capturedPhotos.length <= 0
+                ? { opacity: 0.2, marginTop: 0 }
+                : { opacity: 1, marginTop: height * 0.05 },
             ]}
           >
             <View style={styles.imageContainer}>
@@ -200,7 +200,7 @@ const Progress = ({ navigation, route }) => {
                 ))
               )}
             </View>
-          </ScrollView>
+          </View>
 
           {/* text display */}
           <ScrollView vertical style={styles.textContainer}>
@@ -248,7 +248,7 @@ const Progress = ({ navigation, route }) => {
               <Text style={styles.notifyButtonText}>Send SOS</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </ScrollView>
       </View>
     </KeyboardAvoidingView>
   );
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   },
   container: {
     paddingTop: statusBarSize(),
-    flex: 1,
+
     justifyContent: "center",
     paddingHorizontal: width * 0.04,
     gap: 12,
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
 
   //Input Station
   actionsContainer: {
-    flex: 2,
+    flex: 1,
 
     backgroundColor: "maroon",
     borderTopRightRadius: width * 0.2,
@@ -323,12 +323,13 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginHorizontal: width * 0.05,
     borderRadius: width * 0.05,
-
-    maxHeight: width * 0.3,
   },
   backgroundText: {
     position: "relative",
     fontSize: 42,
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
     fontWeight: "bold",
     opacity: 0.2,
     bottom: 0,
@@ -341,12 +342,11 @@ const styles = StyleSheet.create({
     margin: 2,
   },
   imageContainer: {
-    maxHeight: width * 0.3,
+    maxHeight: width * 0.45,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: width * 0.02,
-    gap: 12,
   },
   removeButton: {
     position: "absolute",
@@ -360,8 +360,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   capturedImage: {
-    width: width * 0.25,
-    height: width * 0.25,
+    width: width * 0.4,
+    height: width * 0.4,
     borderRadius: 10,
   },
   cameraIconButton: {
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
   textContainer: {
     paddingHorizontal: width * 0.05,
     paddingVertical: width * 0.03,
-    maxHeight: width * 0.2,
+    minHeight: width * 0.25,
     backgroundColor: "#fff",
     borderRadius: width * 0.05,
     marginHorizontal: width * 0.05,

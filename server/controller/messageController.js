@@ -1,15 +1,10 @@
 const userModel = require("../model/userModel");
 const ReportModel = require("../model/reportModel");
 
-
-
 const ReportMessage = async (req, res) => {
   try {
     const { emergency, location, message, senderId, percentage } = req.body;
 
-    console.log("Incoming request:", req.body, req.file);
-
-    console.log(emergency, location, message, senderId);
     if (!req.file) {
       console.error("No file uploaded.");
       return res.status(400).send("No file uploaded.");

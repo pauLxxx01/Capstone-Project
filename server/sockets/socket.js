@@ -2,6 +2,9 @@
 const JWT = require("jsonwebtoken");
 const { Server } = require("socket.io");
 const colors = require("colors");
+const adminModel = require("../model/adminModel");
+
+let activeSockets = {}; // Object to store sockets by user ID
 
 // WebSocket authentication middleware
 const socketIoMiddleware = (socket, next) => {
@@ -17,7 +20,9 @@ const socketIoMiddleware = (socket, next) => {
       return next(new Error("Unauthorized"));
     }
 
-    console.log('Decoded Token: ', decoded);
+    console.log("Decoded Token: ", decoded);
+
+    activeSockets[decoded._id] = socket;
 
     // Attach decoded user info to the socket object
     socket.user = decoded;
@@ -28,25 +33,84 @@ const socketIoMiddleware = (socket, next) => {
 
 // WebSocket connection logic
 const socketConnection = (socket) => {
-  console.log(`User Connected: ${socket.user._id} - ${socket.user.name}- ${socket.id} `.bgCyan.white);
+  console.log(
+    `User Connected: ${socket.user._id} - ${socket.user.name} - ${socket.id} `
+      .bgCyan.white
+  );
 
   // Example of emitting an event after a successful connection
   socket.emit("userConnected", {
-    account_id: socket.user._id,
+    userId: socket.user._id,
+    name: socket.user.name,
   });
 
-   // Listen for real-time updates
-   socket.on("dataUpdated", (updatedData) => {
-    console.log("Real-time data received:", updatedData);
-    setData(updatedData);
+  socket.on("notification", (notif) => {
+    console.log("Notification from server socket: " + notif);
+
   });
 
+  socket.emit("receive-notification", (notif) => {
+    console.log("Notification received:", notif);
+  })
+
+  socket.on('report', (reportData) => {
+
+  });
+  
   socket.on("disconnect", () => {
     console.log(
-      `User disconnected: ${socket.user._id} - ${socket.id}`.bgRed.white
+      `User disconnected: ${socket.user._id} - ${socket.user.name} - ${socket.id}`
+        .bgRed.white
     );
   });
 };
+
+async function sendNotificationToAdmins(message) {
+  try {
+    // Query all users with the role "admin"
+    const admins = await adminModel.find({ role: "admin" });
+
+    // Notify each admin (assuming you store socket connections in activeSockets)
+    admins.forEach((admin) => {
+      const socket = activeSockets[admin._id]; // or admin.name depending on your key
+
+      if (socket) {
+        socket.emit("notification", message); // Send the notification to the admin
+        console.log(`Notification sent to admin ${admin.name} --- ${message}`);
+      } else {
+        console.log(`Admin ${admin.name} is not connected`);
+      }
+    });
+  } catch (error) {
+    console.error("Error sending notification to admins:", error);
+  }
+}
+
+async function sendReport(emergency, location, message, senderId, percentage, img) {
+  try {
+    const admins = await adminModel.find({ role: 'admin' });
+
+    admins.forEach((admin) => {
+      const socket = activeSockets[admin._id]; // or admin.name depending on your key
+     
+      if (socket) {
+        socket.emit('report', {
+          emergency,
+          location,
+          message,
+          senderId,
+          percentage,
+          img
+        }); // Send detailed report
+        console.log(`Report sent to admin ${admin.name} --- ${senderId}`);
+      } else {
+        console.log(`Admin ${admin.name} is not connected`);
+      }
+    })
+  } catch (error) {
+    console.error("Error sending report to admins:", error);
+  }
+}
 
 // Initialize and configure WebSocket server
 const initializeSocket = (server) => {
@@ -61,4 +125,4 @@ const initializeSocket = (server) => {
   global.io = io;
 };
 
-module.exports = initializeSocket;
+module.exports = { initializeSocket, sendNotificationToAdmins,sendReport };

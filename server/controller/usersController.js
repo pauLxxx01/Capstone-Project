@@ -108,6 +108,13 @@ const updateAccounts = async (req, res) => {
   }
 };
 
+const getToken = async (req, res) => {
+  const { token} = req.body;
+  const id = req.params.id;
+  await userModel.findByIdAndUpdate(id, {pushToken: token}, {new: true});
+
+  res.send({message: 'Token saved successfully!'})
+}
 
 const registerUserController = async (req, res) => {
   try {
@@ -121,6 +128,7 @@ const registerUserController = async (req, res) => {
       phone_number,
       department,
       address,
+      
       // for parent
       parentName,
       parentAddress,
@@ -396,6 +404,7 @@ const loginController = async (req, res) => {
     const token = JWT.sign({ _id: user._id, name: user.name }, process.env.JWT_SECRET, {
       expiresIn: "1y", // 1 hour token expiry
     });
+    
     const decodedToken = JWT.decode(token);
     console.log(decodedToken, decodedToken.exp);
 
@@ -423,6 +432,7 @@ module.exports = {
   //for user
   getUser,
   deleteUser,
+  getToken,
 
   //mobile
   loginController,

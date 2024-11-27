@@ -102,8 +102,8 @@ const loginControllers = async (req, res) => {
     }
 
     //Token JWT
-    const token = JWT.sign({ _id: admin._id, name: admin.name }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+    const token = JWT.sign({ _id: admin._id, name: admin.name, role: admin.role }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
     });
 
     // SendVerificationCode(admin.email, verificationToken);

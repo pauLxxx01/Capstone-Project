@@ -21,8 +21,9 @@ import SubmitButton from "../../../components/SubmitButton";
 import InputBox from "../../../components/TextFieldBox";
 import { AuthContext } from "../../../context/authContext";
 
-
 const { width, height } = Dimensions.get("window");
+
+import * as Notifications from 'expo-notifications';
 
 export default function Login  ({ navigation })  {
   //global state
@@ -31,6 +32,23 @@ export default function Login  ({ navigation })  {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [pushToken, setPushToken] = useState("");
+
+  useEffect(() => {
+    const getPushToken = async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status === 'granted') {
+        const token = await Notifications.getExpoPushTokenAsync();
+        setPushToken(token.data);
+        console.log("Push token: ", token.data);
+      } else {
+        Alert.alert("Alert", "No push token available.");
+      }
+    }
+  
+    getPushToken();
+  }, []);
 
   const handleSubmit = async () => {
     setLoading(true); // Start loading
@@ -49,6 +67,11 @@ export default function Login  ({ navigation })  {
         account_id: user_id,
         password,
       });
+      console.log("data: ",data.user._id)
+      await axios.put(`/save-token/${data.user._id}`, {
+        token: pushToken,
+      })
+
       registerIndieID(`${user_id}`, 24898, '760ZeHdkeVxNNpUDQg7hEN');
 
       console.log("data: ", data);

@@ -167,7 +167,7 @@ const UserAccounts = ({ users }) => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
-
+  console.log(users)
   return (
     <div className="admin-accounts">
       <h2>User Accounts</h2>

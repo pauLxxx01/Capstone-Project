@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./modal.scss";
 import { motion } from "framer-motion";
-import { zoomIn } from "../../../../variants";
+import {fadeIn, zoomIn } from "../../../../variants";
 import { headerTableModal } from "../../../../newData";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -11,10 +11,6 @@ function Modal({ setOpenModal, title, data, users }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  console.log(data, "data")
-  console.log(users, "users")
-  // Filter users based on search term and message IDs
-  // Filter users based on search term and matching message IDs (reversed logic)
   const filteredUsers = data
     .filter((datas) =>
       users.some(
@@ -152,38 +148,43 @@ function Modal({ setOpenModal, title, data, users }) {
             </table>
           </div>
           {totalPages > 1 && (
-            <div className="containerNav">
-              <nav>
-                <ul className="pagination-modal">
-                  {currentPage > 1 && (
-                    <li className="page-item">
-                      <button className="page-link" onClick={prePage}>
-                        Previous
-                      </button>
-                    </li>
-                  )}
-                  {Array.from({ length: totalPages }, (_, i) => (
-                    <li
-                      key={i}
-                      onClick={() => handlePageChange(i + 1)}
-                      className={`page-item ${
-                        currentPage === i + 1 ? "active" : ""
-                      }`}
-                    >
-                      <button className="page-link">{i + 1}</button>
-                    </li>
-                  ))}
-                  {currentPage < totalPages && (
-                    <li className="page-item">
-                      <button className="page-link" onClick={nextPage}>
-                        Next
-                      </button>
-                    </li>
-                  )}
-                </ul>
-              </nav>
-            </div>
-          )}
+        <motion.div
+        variants={fadeIn("right", 0.1)}
+        initial="hidden"
+        whileInView={"show"}
+      
+         className="containerNav">
+          <nav>
+            <ul className="pagination-modal">
+              {currentPage > 1 && (
+                <li className="page-items">
+                  <button className="page-links" onClick={prePage}>
+                    Previous
+                  </button>
+                </li>
+              )}
+              {Array.from({ length: totalPages }, (_, i) => (
+                <li
+                  key={i}
+                  onClick={() => handlePageChange(i + 1)}
+                  className={`page-items ${
+                    currentPage === i + 1 ? "active" : ""
+                  }`}
+                >
+                  <button className="page-links">{i + 1}</button>
+                </li>
+              ))}
+              {currentPage < totalPages && (
+                <li className="page-items">
+                  <button className="page-links" onClick={nextPage}>
+                    Next
+                  </button>
+                </li>
+              )}
+            </ul>
+          </nav>
+        </motion.div>
+      )}
         </div>
       </motion.div>
     </div>

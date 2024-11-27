@@ -3,7 +3,6 @@ import {
   ScrollView,
   View,
   Text,
-  Image,
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
@@ -11,8 +10,9 @@ import {
   Dimensions,
   Animated,
   PanResponder,
-  Alert,
-  BackHandler,
+  Platform,
+  StatusBar,
+  RefreshControl,
 } from "react-native";
 import { AuthContext } from "../../../context/authContext";
 import { io } from "socket.io-client";
@@ -31,18 +31,43 @@ import {
   getFullScreenHeight,
   statusBarSize,
 } from "./../../../components/getFullScreen";
-import axios from "axios";
+console.log("Constants: ", Constants.statusBarHeight);
+const statusBarHeight =
+  Platform.OS === "ios" ? Constants.statusBarHeight : StatusBar.currentHeight;
+
+import Constants from "expo-constants";
 
 export default function Homepage({ navigation }) {
   const [selectedAlert, setSelectedAlert] = useState(null);
   const [menuVisible, setMenuVisible] = useState(false);
   const sidebarAnim = useRef(new Animated.Value(-250)).current;
   const [emergencyImg, setEmergencyImg] = useState(null);
-
-  const [exitApp, setExitApp] = useState(false); // Controls modal visibility
-
   //user info
   const [state] = useContext(AuthContext);
+  const horizontalScrollRef = useRef(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Function to handle refresh
+  const onRefresh = async () => {
+    setRefreshing(true);
+
+    try {
+      // Simulate a network request or data update
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+    } finally {
+      Animated.timing(sidebarAnim, {
+        toValue: -250,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+      // Reset the scroll position to the start after refreshing
+      horizontalScrollRef.current?.scrollTo({ x: 0, animated: true });
+      setRefreshing(false);
+    
+    }
+  };
 
   const panResponder = useRef(
     PanResponder.create({
@@ -51,7 +76,7 @@ export default function Homepage({ navigation }) {
       onPanResponderMove: (evt, gestureState) => {
         if (gestureState.dx < 0) {
           Animated.timing(sidebarAnim, {
-            toValue: Math.max(gestureState.dx, -250),
+            toValue: Math.max(gestureState.dx, -150),
             duration: 0,
             useNativeDriver: true,
           }).start();
@@ -90,7 +115,7 @@ export default function Homepage({ navigation }) {
     const matchingEmergency = emergencies.find(
       (emergency) => emergency.type === selectedAlert
     );
-    console.log("EMERGENCY CLICKED: ", matchingEmergency);
+
     if (matchingEmergency) {
       setEmergencyImg(matchingEmergency.img);
       navigation.navigate("Progress", {
@@ -127,177 +152,129 @@ export default function Homepage({ navigation }) {
       }
     });
 
-    const backAction = () => {
-      setExitApp(true); // Show the modal
-      return true; // Prevent default back behavior
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
     // Cleanup function to disconnect the socket on component unmount
     return () => {
-      backHandler.remove();
       socket.disconnect();
       console.log("Socket disconnected");
     };
   }, [token]);
 
-  const handleExitApp = () => {
-    BackHandler.exitApp(); // Exit the app
-  };
-
-  const handleCloseModal = () => {
-    setExitApp(false); // Close the modal
-  };
-
-  const handleSend = () => {
-    axios.post(`https://app.nativenotify.com/api/indie/notification`, {
-      subID: `${state.user.account_id}`,
-      appId: 24898,
-      appToken: '760ZeHdkeVxNNpUDQg7hEN',
-      title: `Agapay`,
-      message: `Hi ${state.user.name}!\nAdmin already accepted your report and they will call you After a while!  `,
-      
- });
-  }
   return (
     <SafeAreaView style={styles.container} {...panResponder.panHandlers}>
-      <Animated.View
-        style={[styles.sidebar, { transform: [{ translateX: sidebarAnim }] }]}
+      <ScrollView
+        contentContainerStyle={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
-        <View style={styles.logo}>
-          <Text style={styles.logoText}>AGAPAY</Text>
-        </View>
-        {/* Menu bar list */}
-        {menuItems.map((item, index) => (
-          <MenuList
-            key={index}
-            toNavigate={item.toNavigate}
-            name={item.name}
-            text={item.text}
-            navigation={navigation}
+        <Animated.View
+          style={[styles.sidebar, { transform: [{ translateX: sidebarAnim }] }]}
+        >
+          <View style={styles.logo}>
+            <Text style={styles.logoText}>AGAPAY</Text>
+          </View>
+          {/* Menu bar list */}
+          {menuItems.map((item, index) => (
+            <MenuList
+              key={index}
+              toNavigate={item.toNavigate}
+              name={item.name}
+              text={item.text}
+              navigation={navigation}
+            />
+          ))}
+        </Animated.View>
+        {/* Modal for Exit Confirmation */}
+
+        {menuVisible && (
+          <TouchableOpacity
+            style={styles.overlay}
+            onPress={toggleMenu}
+            activeOpacity={1}
           />
-        ))}
-      </Animated.View>
-      {/* Modal for Exit Confirmation */}
-      <Modal
-        visible={exitApp}
-         animationType="fade"
-        transparent={true}
-     
-        onRequestClose={handleCloseModal} // Close modal on back press
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>
-              Are you sure you want to exit the app?
-            </Text>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.button} onPress={handleExitApp}>
-                <Text style={styles.buttonText}>YES</Text>
+        )}
+
+        <View style={styles.mainContent}>
+          <View style={styles.headerContainer}>
+            <View style={styles.header}>
+              {/* menu bar */}
+              <TouchableOpacity style={styles.menuButton} onPress={toggleMenu}>
+                <Text style={styles.menuText}>☰</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handleCloseModal}
-              >
-                <Text style={styles.buttonText}>NO</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-      {menuVisible && (
-        <TouchableOpacity
-          style={styles.overlay}
-          onPress={toggleMenu}
-          activeOpacity={1}
-        />
-      )}
-
-      <View style={styles.mainContent}>
-        <View style={styles.headerContainer}>
-          <View style={styles.header}>
-            {/* menu bar */}
-            <TouchableOpacity style={styles.menuButton} onPress={toggleMenu}>
-              <Text style={styles.menuText}>☰</Text>
-            </TouchableOpacity>
-            {/* Greetings for user */}
-            <View style={styles.headerContent}>
-              <Text style={styles.greeting}>{state.user.name}</Text>
-              <Text style={styles.subGreeting}>
-                I am your ka-AGAPAY, I am ready to help you on your needs
-              </Text>
-            </View>
-            {/* <Image source={require('../../../assets/anna.png')} style={styles.profileImage} /> */}
-          </View>
-
-          {/*  info card list */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.upperScrollView}
-            contentContainerStyle={styles.upperScrollContent}
-          >
-            {infoCardData.map((card, index) => (
-              <InfoCard
-                key={index}
-                title={card.title}
-                source={card.source}
-                description={card.description}
-              />
-            ))}
-          </ScrollView>
-        </View>
-
-       
-        {/* emergency card list */}
-        <View style={styles.bottomSection}>
-        <TouchableOpacity onPress={() => handleSend()}>
-  <Text style={styles.sectionTitle}>send</Text>
-</TouchableOpacity>
-          <Text style={styles.sectionTitle}>HOW CAN I HELP YOU?</Text>
-          <View style={styles.grid}>
-            {emergencies.map((item) => (
-              <EmergencyCard key={item.id} {...item} openModal={openModal} />
-            ))}
-          </View>
-        </View>
-
-        {/* modal confirmation to navigate */}
-        {selectedAlert && (
-          <Modal
-            animationType="fade"
-            transparent={true}
-            visible={selectedAlert !== null}
-            onRequestClose={closeModal}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalText}>
-                  Do you really want to send an SOS alert under {selectedAlert}?
+              {/* Greetings for user */}
+              <View style={styles.headerContent}>
+                <Text style={styles.greeting}>{state.user.name}</Text>
+                <Text style={styles.subGreeting}>
+                  I am your ka-AGAPAY, I am ready to help you on your needs.
                 </Text>
-                <View style={styles.modalButtons}>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => handleConfirm(selectedAlert)}
-                  >
-                    <Text style={styles.buttonText}>YES</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => closeModal()}
-                  >
-                    <Text style={styles.buttonText}>NO</Text>
-                  </TouchableOpacity>
+              </View>
+              {/* <Image source={require('../../../assets/anna.png')} style={styles.profileImage} /> */}
+            </View>
+
+            {/*  info card list */}
+            <ScrollView
+              horizontal
+              ref={horizontalScrollRef}
+              showsHorizontalScrollIndicator={false}
+              style={styles.upperScrollView}
+              contentContainerStyle={styles.upperScrollContent}
+              scrollEventThrottle={0}
+            >
+              {infoCardData.map((card, index) => (
+                <InfoCard
+                  key={index}
+                  title={card.title}
+                  source={card.source}
+                  description={card.description}
+                />
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* emergency card list */}
+          <View style={styles.bottomSection}>
+            <Text style={styles.sectionTitle}>HOW CAN I HELP YOU?</Text>
+            <View style={styles.grid}>
+              {emergencies.map((item) => (
+                <EmergencyCard key={item.id} {...item} openModal={openModal} />
+              ))}
+            </View>
+          </View>
+
+          {/* modal confirmation to navigate */}
+          {selectedAlert && (
+            <Modal
+              animationType="fade"
+              transparent={true}
+              visible={selectedAlert !== null}
+              onRequestClose={closeModal}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalText}>
+                    Do you really want to send an SOS alert under{" "}
+                    {selectedAlert}?
+                  </Text>
+                  <View style={styles.modalButtons}>
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={() => handleConfirm(selectedAlert)}
+                    >
+                      <Text style={styles.buttonText}>YES</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={() => closeModal()}
+                    >
+                      <Text style={styles.buttonText}>NO</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
-          </Modal>
-        )}
-      </View>
+            </Modal>
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

@@ -85,6 +85,7 @@ const viewReports = () => {
 
   const handleUpdate = async (id) => {
     console.log("Navigating with user info:", userInfo.account_id);
+    console.log("User's push token: ", userInfo.pushToken);
 
     try {
       // Extract user information outside the request for better readability
@@ -95,21 +96,29 @@ const viewReports = () => {
         percentage: 50, // No need for quotes if it's a number
       };
 
-      axios.post(`https://app.nativenotify.com/api/indie/notification`, {
-        subID: `${userInfo.account_id}`,
-        appId: 24898,
-        appToken: '760ZeHdkeVxNNpUDQg7hEN',
-        title: `AGAPAY`,
-        message: `Hi ${userInfo.name}!\nAdmin already accepted your report and they will call you after a while!  `,
-      
-   });
+      //     axios.post(`https://app.nativenotify.com/api/indie/notification`, {
+      //       subID: `${userInfo.account_id}`,
+      //       appId: 24898,
+      //       appToken: '760ZeHdkeVxNNpUDQg7hEN',
+      //       title: `AGAPAY`,
+      //       message: `Hi ${userInfo.name}!\nAdmin already accepted your report and they will call you after a while!  `,
+
+      //  });
+      const sendNotif = {
+        to: `${userInfo.pushToken}`,
+        title: "New Notification",
+        body: "Tap to see details!",
+        data: { screen: "Transaction" },
+      };
+
+      axios.post('push-notification', sendNotif)
+
       // Use template literals for the URL
       const apiEndpoint = `/user/message/update/${id}`;
 
       // Make the PUT request
       await axios.put(apiEndpoint, requestData);
 
-      const testInfo = { name: "Test" };
       // Navigate after successful request
       navigate(`/home/report/in-progress/${id}`, { state: { id: userInfo } });
     } catch (error) {
@@ -125,7 +134,6 @@ const viewReports = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
 
   if (loading) return <Loading />;
   if (error) return <div>⚠️{error}</div>;
@@ -174,13 +182,13 @@ const viewReports = () => {
             </div>
             <div className="titles">
               <span>Report Details</span>
-              <span>{messages.data.data.emergency} Emergency</span>
+              <span>{messages.data.data.img} Emergency</span>
             </div>
           </div>
           <div className="box box1">
             <div className="image">
               <span>Captured of incident</span>
-              <img src={messages.data.data.img} alt="imgOfIncident" />
+              <img src={messages.data.data.img} alt={messages.data.data.img} />
             </div>
           </div>
           <div className="box box2">

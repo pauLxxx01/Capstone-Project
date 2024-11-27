@@ -16,12 +16,10 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-
       min: 8,
     },
     account_id: {
       type: String,
-      
     },
     phone_number: {
       type: String,
@@ -30,6 +28,9 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     address: {
+      type: String,
+    },
+    pushToken: {
       type: String,
     },
     report: {

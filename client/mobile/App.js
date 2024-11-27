@@ -14,6 +14,7 @@ import Progress from "./screens/home-screen/progress-report/sending-report/repor
 import Camera from "./screens/camera/camera";
 
 import Notification from "./screens/menu-bar/Notification";
+import History from './screens/menu-bar/Transaction';
 
 import { AuthProvider } from "./context/authContext";
 import About from "./screens/menu-bar/About";
@@ -21,27 +22,34 @@ import FeedbackComponent from "./screens/menu-bar/Feedback";
 
 import registerNNPushToken from 'native-notify';
 import * as Notifications from 'expo-notifications';
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
+
+import { useNavigation } from "@react-navigation/native";
+
 
 export default function App() {
+ 
+  const navigationRef = useRef();
 
-    const checkPermissions = async () => {
-      const { status } = await Notifications.getPermissionsAsync();
-      if (status !== 'granted') {
-        await Notifications.requestPermissionsAsync();
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      const data = response.notification.request.content.data;
+      if (data?.screen && navigationRef.current) {
+        navigationRef.current.navigate(data.screen);
       }
-    };
+    });
 
-    checkPermissions();
-
+    return () => subscription.remove();
+  }, []);
+  
     // Register push token for NativeNotify
-    registerNNPushToken(24898, '760ZeHdkeVxNNpUDQg7hEN');
+    // registerNNPushToken(24898, '760ZeHdkeVxNNpUDQg7hEN');
  
 
   const Stack = createNativeStackNavigator();
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <AuthProvider>
         <Stack.Navigator initialRouteName="Welcome">
           <Stack.Screen
@@ -68,7 +76,6 @@ export default function App() {
           <Stack.Screen
             name="Notification"
             component={Notification}
-  
           />
    <Stack.Screen
     name="About"
@@ -77,6 +84,12 @@ export default function App() {
          <Stack.Screen
     name="Feedback"
     component={FeedbackComponent}
+    />
+
+    <Stack.Screen
+    name="Transaction"
+    component={History}
+    
     />
           {/* Report Progress */}
           <Stack.Screen
