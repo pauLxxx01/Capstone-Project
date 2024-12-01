@@ -37,17 +37,25 @@ export default function Login  ({ navigation })  {
 
   useEffect(() => {
     const getPushToken = async () => {
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (status === 'granted') {
-        const token = await Notifications.getExpoPushTokenAsync();
-        setPushToken(token.data);
-        console.log("Push token: ", token.data);
-      } else {
-        Alert.alert("Alert", "No push token available.");
+      try {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status === 'granted') {
+          const token = await Notifications.getExpoPushTokenAsync();
+          setPushToken(token.data);
+          console.log("Push token: ", token.data);
+        } else {
+          Alert.alert("Alert", "Notification permissions not granted.");
+        }
+      } catch (error) {
+        console.error("Error getting push token:", error);
       }
-    }
+    };
   
-    getPushToken();
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
+      getPushToken();
+    } else {
+      console.log("Push notifications are not supported on this platform.");
+    }
   }, []);
 
   const handleSubmit = async () => {
@@ -71,15 +79,11 @@ export default function Login  ({ navigation })  {
       await axios.put(`/save-token/${data.user._id}`, {
         token: pushToken,
       })
-
-      registerIndieID(`${user_id}`, 24898, '760ZeHdkeVxNNpUDQg7hEN');
-
       console.log("data: ", data);
       setState(data);
       await AsyncStorage.setItem("@auth", JSON.stringify(data));
       Alert.alert("Success", data.message || "Login successful!");
       navigation.navigate("Homepage");
-
       getLocalStorageData();
     } catch (error) {
       Alert.alert(

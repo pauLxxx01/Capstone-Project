@@ -11,6 +11,7 @@ import { io } from "socket.io-client";
 import { useSocket } from "../../../socket/Socket.jsx";
 import Notification from "../../../components/notification/notification.jsx";
 import { ToastContainer, toast } from "react-toastify";
+import alertSound from "../../../assets/mp3/alert.mp3";
 const Dashboard = ({ users }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +28,6 @@ const Dashboard = ({ users }) => {
     crime: false,
   });
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,10 +42,8 @@ const Dashboard = ({ users }) => {
         setLoading(false);
       }
     };
-   
+
     fetchData();
-
-
   }, []);
 
   // Define `filteredMessage` outside `findUserMessage`
@@ -55,7 +53,7 @@ const Dashboard = ({ users }) => {
     return messages.filter((message) => {
       const isEmergencyTypeMatch =
         message.emergency.split(" ")[0].toLowerCase() === lowerCaseType;
-      const isRespondStatusMatch = ["unused", "in-progress"].includes(
+      const isRespondStatusMatch = ["pending", "in-progress"].includes(
         message.respond.toLowerCase()
       );
 
@@ -94,10 +92,24 @@ const Dashboard = ({ users }) => {
     setModalOpen((prevModalOpen) => ({ ...prevModalOpen, [type]: false }));
   };
 
+  const sendN = async () => {
+    try {
+      const request = {
+        to: "ExponentPushToken[aAxfsxJRn73J5ic2Cg0yrB]",
+        title: "ExponentPushToken",
+        body: "ExponentPushToken",
+  
+      };
+      await axios.post("push-notification", request);
+    } catch (error) {
+      console.error("Error sending notification:", error);
+    }
+  };
+
   if (loading) return <Loading />;
 
   if (error) return <p>{error}</p>;
-
+  console.log(users);
   return (
     <div>
       {socket ? (
@@ -161,8 +173,8 @@ const Dashboard = ({ users }) => {
             whileInView="show"
             className="title"
           >
-            <h1>DASHBOARD</h1>
-
+            <h1>Dashboard</h1>
+            <button onClick={() => sendN()}>send</button>
           </motion.div>
 
           <motion.div
@@ -214,7 +226,6 @@ const Dashboard = ({ users }) => {
               <span className="emergency">Crime and Violence</span>
             </motion.div>
           </motion.div>
-        
         </div>
       ) : (
         <p style={{ color: "red" }}>Disconnected from server</p>

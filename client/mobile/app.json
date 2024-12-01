@@ -11,6 +11,21 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/agapay/logo/logo.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "sounds": [
+            "./local/assets/notification_sound.wav",
+            "./local/assets/notification_sound_other.wav"
+          ],
+          "enableBackgroundRemoteNotifications": false
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -25,7 +40,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "d55aad3b-de26-4629-9049-253b834665f4"
+        "projectId": "c85535dc-9c9a-4f11-b108-f2a444058bf8"
       }
     },
     "owner": "paulflancia01"

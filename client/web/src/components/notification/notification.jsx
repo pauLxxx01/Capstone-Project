@@ -51,24 +51,6 @@ function Notification() {
 
   return (
     <>
-      <div>
-        <button onClick={handleRefresh}>
-          Notifications ({notificationCount})
-        </button>
-        <h3>
-          {notification?.emergency && (
-            <div>
-              <p>Emergency: {notification.emergency}</p>
-              <p>Location: {notification.location}</p>
-              <p>Message: {notification.message}</p>
-              <p>Sender ID: {notification.senderId}</p>
-              <p>Percentage: {notification.percentage}%</p>
-              <p>{notification.respond}</p>
-              <img src={`http://localhost:8080/images/${notification.img}`} alt={notification.img} />
-            </div>
-          )}
-        </h3>
-      </div>
     </>
   );
 }

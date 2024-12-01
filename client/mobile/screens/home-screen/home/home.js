@@ -15,8 +15,6 @@ import {
   RefreshControl,
 } from "react-native";
 import { AuthContext } from "../../../context/authContext";
-import { io } from "socket.io-client";
-
 //static data
 import { menuItems, emergencies, infoCardData } from "../../../infoData/data";
 
@@ -42,6 +40,7 @@ export default function Homepage({ navigation }) {
   const [menuVisible, setMenuVisible] = useState(false);
   const sidebarAnim = useRef(new Animated.Value(-250)).current;
   const [emergencyImg, setEmergencyImg] = useState(null);
+
   //user info
   const [state] = useContext(AuthContext);
   const horizontalScrollRef = useRef(null);
@@ -65,14 +64,15 @@ export default function Homepage({ navigation }) {
       // Reset the scroll position to the start after refreshing
       horizontalScrollRef.current?.scrollTo({ x: 0, animated: true });
       setRefreshing(false);
-    
     }
   };
 
   const panResponder = useRef(
     PanResponder.create({
-      onMoveShouldSetPanResponder: (evt, gestureState) =>
-        gestureState.dx < -20 && menuVisible,
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        gestureState.dx < -20 && menuVisible;
+    
+      },
       onPanResponderMove: (evt, gestureState) => {
         if (gestureState.dx < 0) {
           Animated.timing(sidebarAnim, {
@@ -128,37 +128,6 @@ export default function Homepage({ navigation }) {
     }
   };
 
-  const token = state.token;
-  useEffect(() => {
-    // Create socket connection
-    const socket = io("http://192.168.18.42:8080", {
-      query: { token: token },
-    });
-
-    // Event listeners
-    socket.on("connect", () => {
-      console.log("Connected to server");
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Disconnected from server");
-    });
-
-    socket.on("userConnected", (data) => {
-      if (Object.keys(data).length === 0) {
-        console.log("User connected with no additional data.");
-      } else {
-        console.log("User connected:", data);
-      }
-    });
-
-    // Cleanup function to disconnect the socket on component unmount
-    return () => {
-      socket.disconnect();
-      console.log("Socket disconnected");
-    };
-  }, [token]);
-
   return (
     <SafeAreaView style={styles.container} {...panResponder.panHandlers}>
       <ScrollView
@@ -205,7 +174,7 @@ export default function Homepage({ navigation }) {
               <View style={styles.headerContent}>
                 <Text style={styles.greeting}>{state.user.name}</Text>
                 <Text style={styles.subGreeting}>
-                  I am your ka-AGAPAY, I am ready to help you on your needs.
+                  I am ready to help you, ka - AGAPAY!
                 </Text>
               </View>
               {/* <Image source={require('../../../assets/anna.png')} style={styles.profileImage} /> */}

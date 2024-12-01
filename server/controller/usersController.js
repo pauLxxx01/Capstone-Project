@@ -1,7 +1,7 @@
 const { hashPassword, comparePassword } = require("../helpers/authHelper");
 const parentModel = require("../model/parentModel");
 const userModel = require("../model/userModel");
-const messageModel = require("../model/messageModel");
+
 const JWT = require("jsonwebtoken");
 
 const updateAccounts = async (req, res) => {

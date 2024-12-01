@@ -3,6 +3,7 @@ const JWT = require("jsonwebtoken");
 const { Server } = require("socket.io");
 const colors = require("colors");
 const adminModel = require("../model/adminModel");
+const userModel = require("../model/userModel");
 
 let activeSockets = {}; // Object to store sockets by user ID
 
@@ -46,17 +47,12 @@ const socketConnection = (socket) => {
 
   socket.on("notification", (notif) => {
     console.log("Notification from server socket: " + notif);
-
   });
 
   socket.emit("receive-notification", (notif) => {
     console.log("Notification received:", notif);
-  })
-
-  socket.on('report', (reportData) => {
-
   });
-  
+
   socket.on("disconnect", () => {
     console.log(
       `User disconnected: ${socket.user._id} - ${socket.user.name} - ${socket.id}`
@@ -65,52 +61,57 @@ const socketConnection = (socket) => {
   });
 };
 
-async function sendNotificationToAdmins(message) {
+async function sendReport(
+  emergency,
+  location,
+  message,
+  senderId,
+  percentage,
+  img
+) {
   try {
-    // Query all users with the role "admin"
     const admins = await adminModel.find({ role: "admin" });
 
-    // Notify each admin (assuming you store socket connections in activeSockets)
     admins.forEach((admin) => {
       const socket = activeSockets[admin._id]; // or admin.name depending on your key
 
       if (socket) {
-        socket.emit("notification", message); // Send the notification to the admin
-        console.log(`Notification sent to admin ${admin.name} --- ${message}`);
-      } else {
-        console.log(`Admin ${admin.name} is not connected`);
-      }
-    });
-  } catch (error) {
-    console.error("Error sending notification to admins:", error);
-  }
-}
-
-async function sendReport(emergency, location, message, senderId, percentage, img) {
-  try {
-    const admins = await adminModel.find({ role: 'admin' });
-
-    admins.forEach((admin) => {
-      const socket = activeSockets[admin._id]; // or admin.name depending on your key
-     
-      if (socket) {
-        socket.emit('report', {
+        socket.emit("report", {
           emergency,
           location,
           message,
           senderId,
           percentage,
-          img
+          img,
         }); // Send detailed report
+        console.log(`Socket: ${socket}`)
         console.log(`Report sent to admin ${admin.name} --- ${senderId}`);
       } else {
         console.log(`Admin ${admin.name} is not connected`);
       }
-    })
+    });
   } catch (error) {
     console.error("Error sending report to admins:", error);
   }
 }
+
+async function updateProgress(userId, percentage, id) {
+  try {
+    // Find the socket for the specific user
+    const socket = activeSockets[userId];
+
+    if (socket) {
+      // Emit the progress update to the specific user
+      socket.emit("progressUpdate", {userId, percentage, id});
+      console.log(`Progress updated for user ${userId} messageId: ${id}  ~~ percent: ${percentage}`);
+    } else {
+      console.log(`No active socket found for user ${userId}`);
+    }
+  } catch (error) {
+    console.error("Error updating progress:", error);
+  }
+}
+
 
 // Initialize and configure WebSocket server
 const initializeSocket = (server) => {
@@ -125,4 +126,4 @@ const initializeSocket = (server) => {
   global.io = io;
 };
 
-module.exports = { initializeSocket, sendNotificationToAdmins,sendReport };
+module.exports = { initializeSocket, sendReport, updateProgress };

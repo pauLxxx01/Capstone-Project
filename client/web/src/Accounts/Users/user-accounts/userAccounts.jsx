@@ -1,4 +1,4 @@
-import axios from "axios";
+ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import formatPhilippinePhoneNumber from "../../helper/phoneFormat";
@@ -379,7 +379,7 @@ const UserAccounts = ({ users }) => {
               (parent) => parent._id.toString() === user.parent.toString()
             );
 
-            const userMessageIds = user.message || [];
+            const userMessageIds = user.report_data || [];
             const userMessages = messages.filter((message) =>
               userMessageIds.includes(message._id.toString())
             );

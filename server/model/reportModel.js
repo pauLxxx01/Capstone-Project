@@ -31,8 +31,8 @@ const reportSchema = new mongoose.Schema(
     },
     respond: {
       type: String,
-      enum: ["completed", "in-progress", "unused"],
-      default: "unused",
+      enum: ["completed", "in-progress", "pending"],
+      default: "pending",
     },
     responder: [
       {

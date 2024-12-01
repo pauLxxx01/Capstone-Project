@@ -11,6 +11,14 @@
   background-color: $dark-bg;
   color: $soft-color;
 
+
+  .logo{
+  
+    text-decoration: none;
+    color: white;
+  }
+  
+
   .icons {
     display: flex;
     align-items: center;
@@ -107,7 +115,6 @@
 
   }
 }
-
 .notification:hover{
   background-color: rgba(255, 255, 0, 0.224);
   border-radius: 12px;

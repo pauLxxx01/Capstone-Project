@@ -28,12 +28,12 @@ const Report = ({ users, messages }) => {
         } else if (status === "in-progress") {
           acc.inProgress++;
         } else {
-          acc.unused++;
+          acc.pending++;
         }
 
         return acc;
       },
-      { completed: 0, inProgress: 0, unused: 0 }
+      { completed: 0, inProgress: 0, pending: 0 }
     );
   };
 
@@ -45,7 +45,7 @@ const Report = ({ users, messages }) => {
       navigate(`/home/report/in-progress/${data.messageID}`, {
         state: { id: data },
       });
-    } else if (data.respond === "unused") {
+    } else if (data.respond === "pending") {
       navigate(`/home/report/${data.messageID}`);
     } else {
       navigate(`/home/report`);
@@ -111,7 +111,7 @@ const Report = ({ users, messages }) => {
           : new Date(a.createdAt) - new Date(b.createdAt)
       ); 
 
-    return sortedUsers;
+    return;
   },  [messages, users, searchTerm, sortDirection]); 
 
   // Filter based on selected status
@@ -197,10 +197,10 @@ const Report = ({ users, messages }) => {
           </div>
           <div
             className="count-history"
-            onClick={() => setFilterStatus("unused")}
+            onClick={() => setFilterStatus("pending")}
           >
-            <span className="dataCount unused">{responseCount.unused}</span>
-            <span className="dataCount">Unused report</span>
+            <span className="dataCount pending">{responseCount.pending}</span>
+            <span className="dataCount">Pending report</span>
           </div>
         </motion.div>
       </div>
@@ -260,8 +260,8 @@ const Report = ({ users, messages }) => {
                 <div className={`data ${data.respond}`}>
                   {data.respond === "completed"
                     ? "Completed"
-                    : data.respond === "unused"
-                    ? "Unused"
+                    : data.respond === "pending"
+                    ? "Pending"
                     : data.respond === "in-progress"
                     ? "In - Progress"
                     : "No respond received"}

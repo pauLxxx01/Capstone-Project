@@ -33,10 +33,12 @@ const userSchema = new mongoose.Schema(
     pushToken: {
       type: String,
     },
-    report: {
+    report_data: [
+      {
       type: Schema.Types.ObjectId,
       ref: "Report",
     },
+  ],
     parent: {
       type: Schema.Types.ObjectId,
       ref: "Parent",

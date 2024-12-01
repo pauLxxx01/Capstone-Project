@@ -84,26 +84,14 @@ const viewReports = () => {
   }, [id]);
 
   const handleUpdate = async (id) => {
-    console.log("Navigating with user info:", userInfo.account_id);
-    console.log("User's push token: ", userInfo.pushToken);
-
     try {
-      // Extract user information outside the request for better readability
-
-      // Define request data with meaningful variable names
       const requestData = {
         respond: "in-progress",
-        percentage: 50, // No need for quotes if it's a number
+        percentage: 40, 
+        userId: userInfo._id, 
+        id: id
       };
 
-      //     axios.post(`https://app.nativenotify.com/api/indie/notification`, {
-      //       subID: `${userInfo.account_id}`,
-      //       appId: 24898,
-      //       appToken: '760ZeHdkeVxNNpUDQg7hEN',
-      //       title: `AGAPAY`,
-      //       message: `Hi ${userInfo.name}!\nAdmin already accepted your report and they will call you after a while!  `,
-
-      //  });
       const sendNotif = {
         to: `${userInfo.pushToken}`,
         title: "New Notification",
@@ -111,7 +99,7 @@ const viewReports = () => {
         data: { screen: "Transaction" },
       };
 
-      axios.post('push-notification', sendNotif)
+      await axios.post('push-notification', sendNotif)
 
       // Use template literals for the URL
       const apiEndpoint = `/user/message/update/${id}`;
@@ -182,7 +170,7 @@ const viewReports = () => {
             </div>
             <div className="titles">
               <span>Report Details</span>
-              <span>{messages.data.data.img} Emergency</span>
+              <span>{messages.data.data.emergency}</span>
             </div>
           </div>
           <div className="box box1">

@@ -88,7 +88,7 @@ const Progress = ({ navigation, route }) => {
         setLoading(false);
         return;
       }
-      const percentage = "25";
+      const percentage = 10;
       const formData = new FormData();
       formData.append("emergency", name);
       formData.append("location", selectedValue);
@@ -107,10 +107,9 @@ const Progress = ({ navigation, route }) => {
           "Content-Type": "multipart/form-data",
         },
       };
-      await axios.post("/send-notification", {
-        message: `${state.user.account_id} reported for ${name}`,
-      });
+
       await axios.post("/send-report", formData, config);
+
       Alert.alert(
         "SOS Sent!", // Title
         "Your emergency report has been sent.", // Message
@@ -120,7 +119,7 @@ const Progress = ({ navigation, route }) => {
             onPress: () => navigation.navigate("Homepage"),
           },
         ],
-        { cancelable: false } 
+        { cancelable: false }
       );
     } catch (error) {
       console.log(error);

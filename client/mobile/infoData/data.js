@@ -1,8 +1,8 @@
 const menuItems = [
-  { toNavigate: "Notification", name: "bell", text: "Notification Settings" },
+  { toNavigate: "Transaction", name: "history", text: "Transaction" },
   { toNavigate: "Announcement", name: "bullhorn", text: "Announcement" },
-  { toNavigate: "Transaction", name: "history", text: "Transaction History" },
   { toNavigate: "UpdateInfo", name: "refresh", text: "Update Information" },
+  { toNavigate: "Notification", name: "bell", text: "Notification Settings" },
   { toNavigate: "Feedback", name: "star", text: "Feedback" },
   { toNavigate: "About", name: "info-circle", text: "About the application" },
 ];
@@ -110,8 +110,6 @@ const emergencies = [
   },
 ];
 
-
-
 const options = [
   { label: "CCMS BUILDING", value: "CCMS BUILDING" },
   { label: "CENG BUILDING", value: "CENG BUILDING" },
@@ -126,7 +124,6 @@ const options = [
   { label: "CNAHS BUILDING", value: "CNAHS BUILDING" },
   { label: "BEd BUILDING", value: "BEd BUILDING" },
   { label: "SHS BUILDING", value: "SHS BUILDING" },
-
 ];
 
 export { menuItems, emergencies, infoCardData, options };

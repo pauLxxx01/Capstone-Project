@@ -1,7 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
 
 //context
 const AuthContext = createContext();
@@ -14,21 +13,19 @@ const AuthProvider = ({ children }) => {
     token: "",
   });
 
-
   //default axios
   axios.defaults.baseURL = "http://192.168.18.42:8080/admin/auth";
 
   // initialization state of local storage
   useEffect(() => {
-  
     const loadLocalStorageData = async () => {
       try {
+        const response = await axios.get("/user/messages");
+
         let data = await AsyncStorage.getItem("@auth");
         let loginData = JSON.parse(data);
 
         setState({ user: loginData?.user, token: loginData?.token });
-
-     
       } catch (error) {
         console.error("Failed to load token from storage", error);
       }

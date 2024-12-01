@@ -19,5 +19,5 @@ const sendPush = async (req, res) => {
 }
 
 module.exports = {
-    sendPush
+    sendPush,
 };

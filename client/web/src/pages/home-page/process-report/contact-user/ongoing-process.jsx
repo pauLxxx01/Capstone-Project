@@ -24,6 +24,7 @@ const Ongoing = () => {
   const location = useLocation();
   const passedId = location.state?.id;
 
+  console.log("passed id: " + passedId);
   const [parents, setParents] = useState([]);
   const [progress, setProgress] = useState("");
 
@@ -149,6 +150,9 @@ const Ongoing = () => {
         if (currentStep === 3) {
           setProgress(95);
         }
+        if (currentStep === 4) {
+          setProgress(100);
+        }
       } catch (error) {
         setError(`Error fetching data: ${error.message}`);
       } finally {
@@ -192,6 +196,8 @@ const Ongoing = () => {
     try {
       const data = {
         percentage: progress,
+        userId: passedId._id,
+        id: id
       };
       await axios.put(`/user/message/update/${id}`, data);
 
@@ -227,7 +233,7 @@ const Ongoing = () => {
     <div className="Ongoing-container">
       {passedId ? (
         parents ? (
-          <div className="container-box">
+          <div className="container-box-ongoing">
             <div className="header">
               <h1>REPORT</h1>
               <h4>{passedId.emergency}</h4>
