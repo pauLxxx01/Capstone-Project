@@ -96,7 +96,9 @@ const viewReports = () => {
         to: `${userInfo.pushToken}`,
         title: "New Notification",
         body: "Tap to see details!",
-        data: { screen: "Transaction" },
+        data: { screen: "Transaction", 
+          details: null 
+        },
       };
 
       await axios.post('push-notification', sendNotif)

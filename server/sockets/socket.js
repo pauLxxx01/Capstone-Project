@@ -95,6 +95,32 @@ async function sendReport(
   }
 }
 
+async function sendAnnouncementToUser(
+  title, description, date, department, duration
+){
+  try {
+    const users = await userModel.find();
+    users.forEach((user) => {
+      const socket = activeSockets[user._id]; 
+      if (socket) {
+        socket.emit("announcement", {
+          title,
+          description,
+          date,
+          department,
+          duration,
+        }); // Send announcement
+        console.log(`Socket: ${socket}`)
+        console.log(`Announcement sent to user ${user.name}`);
+      } else {
+        console.log(`User ${user.name} is not connected`);
+      }
+    });
+  } catch (error) {
+    console.error("Error sending announcement to users:", error);
+  }
+}
+
 async function updateProgress(userId, percentage, id) {
   try {
     // Find the socket for the specific user
@@ -126,4 +152,4 @@ const initializeSocket = (server) => {
   global.io = io;
 };
 
-module.exports = { initializeSocket, sendReport, updateProgress };
+module.exports = { initializeSocket, sendReport, updateProgress, sendAnnouncementToUser };

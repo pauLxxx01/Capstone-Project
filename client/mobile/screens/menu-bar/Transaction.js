@@ -19,10 +19,11 @@ import ProgressBar from "./../../components/progress_bar/progressBar";
 
 import { AuthContext } from "../../context/authContext";
 
-const TransactionHistory = () => {
+const TransactionHistory = ({ navigation }) => {
   const { socket } = useSocket();
   const [report, setReport] = useState([]);
   const [state] = useContext(AuthContext);
+ 
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -47,7 +48,7 @@ const TransactionHistory = () => {
     };
 
     fetchMessages();
-  }, [state.user._id]); 
+  }, [state.user._id]);
 
   useEffect(() => {
     const handleProgressUpdate = (data) => {
@@ -61,7 +62,7 @@ const TransactionHistory = () => {
         )
       );
     };
-  
+
     socket.on("progressUpdate", handleProgressUpdate);
 
     // Cleanup on unmount
@@ -76,7 +77,7 @@ const TransactionHistory = () => {
 
   const timeAgo = (date) => {
     const now = new Date();
-    const diff = now - new Date(date); 
+    const diff = now - new Date(date);
     const seconds = Math.floor(diff / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
@@ -107,11 +108,14 @@ const TransactionHistory = () => {
 
   const handlePress = (item) => {
     setSelectedTransaction(item);
-    console.log(item);
-    const detail = report.find((detail) => detail._id === item.id);
+
+    const detail = report.find((detail) => detail._id === item._id);
+    console.log("detail: " + JSON.stringify(detail));
     setSelectedDetail(detail);
-    setModalVisible(true);
-  };
+    navigation.navigate("ShowProgress", {
+      details: detail,
+    });
+  };  
 
   return (
     <View style={styles.container}>
@@ -228,7 +232,6 @@ const styles = StyleSheet.create({
     color: "#8C1515",
   },
   noTransactionText: {
-    backgroundColor: "red",
     fontSize: getFullScreenHeight() * 0.025,
     color: "#888",
     textAlign: "center",

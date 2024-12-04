@@ -20,7 +20,6 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadLocalStorageData = async () => {
       try {
-        const response = await axios.get("/user/messages");
 
         let data = await AsyncStorage.getItem("@auth");
         let loginData = JSON.parse(data);

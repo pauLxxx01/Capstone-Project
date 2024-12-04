@@ -24,10 +24,22 @@ const userSchema = new mongoose.Schema(
     phone_number: {
       type: String,
     },
+    alt_phone_number: {
+      type: String,
+    },
+    degree: {
+      type: String,
+    },
+    school_year: {
+      type: String,
+    },
     department: {
       type: String,
     },
     address: {
+      type: String,
+    },
+    alt_address: {
       type: String,
     },
     pushToken: {
@@ -43,6 +55,12 @@ const userSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "Parent",
     },
+    feedbacks: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Feedback",
+      }
+    ]
   },
   { timestamps: true }
 );

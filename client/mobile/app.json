@@ -19,8 +19,8 @@
           "color": "#ffffff",
           "defaultChannel": "default",
           "sounds": [
-            "./local/assets/notification_sound.wav",
-            "./local/assets/notification_sound_other.wav"
+            "./assets/mp3/notification_sound_mobile.wav",
+            "./assets/mp3/alert.mp3"
           ],
           "enableBackgroundRemoteNotifications": false
         }
@@ -33,8 +33,10 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/agapay/logo/logo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.paulflancia01.Agapay"
     },
+    "scheme": "Agapay",
     "web": {
       "favicon": "./assets/favicon.png"
     },

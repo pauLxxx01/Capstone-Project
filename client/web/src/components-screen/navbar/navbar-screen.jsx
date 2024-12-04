@@ -46,10 +46,11 @@ const navbarScreen = () => {
         style={{ backgroundColor: backgroundColor }}
       >
         <nav className="navbar-screen">
-          <div className="logo-container">
+          <HashLink smooth to="/#home-anchor" className="logo-container">
+
             <img className="agapay-icon" src={Agapay} alt="Agapay-icon"></img>
             <span className="name">AGAPAY</span>
-          </div>
+          </HashLink>
           <ul className="nav-links">
             <li className={location.hash === "#home-anchor" ? "active" : ""}>
               <HashLink smooth to="/#home-anchor" className="links">

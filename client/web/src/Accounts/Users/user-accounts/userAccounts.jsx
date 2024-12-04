@@ -1,4 +1,4 @@
- import axios from "axios";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import formatPhilippinePhoneNumber from "../../helper/phoneFormat";
@@ -32,11 +32,19 @@ const UserAccounts = ({ users }) => {
   const [department, setDepartment] = useState("");
   const [address, setAddress] = useState("");
 
+  const [altPhoneNumber, setAltPhoneNumber] = useState("");
+  const [altAddress, setAltAddress] = useState("");
+  const [degree, setDegree] = useState("");
+  const [schoolYear, setSchoolYear] = useState("");
+
   // for parent
   const [parentName, setParentName] = useState("");
   const [parentPhone, setParentPhone] = useState("");
   const [parentAddress, setParentAddress] = useState("");
   const [parentRelationship, setParentRelationship] = useState("");
+
+  const [parentAltPhone, setParentAltPhone] = useState("");
+  const [parentAltAddress, setParentAltAddress] = useState("");
 
   // messages
   const [messages, setMessages] = useState([]);
@@ -103,7 +111,10 @@ const UserAccounts = ({ users }) => {
   // Handle update operation
   const handleUpdate = async (id) => {
     const formattedPhoneNumber = formatPhilippinePhoneNumber(phoneNumber);
+    const formattedAltPhoneNumber = formatPhilippinePhoneNumber(altPhoneNumber);
     const formattedParentPhoneNumber = formatPhilippinePhoneNumber(parentPhone);
+    const formattedParentAltPhoneNumber =
+      formatPhilippinePhoneNumber(parentAltPhone);
 
     try {
       await axios.put(`/userUpdate/parentUpdate/${id}`, {
@@ -113,12 +124,22 @@ const UserAccounts = ({ users }) => {
         password,
         account_id: accountId,
         phone_number: formattedPhoneNumber,
+
+        alt_phone_number: formattedAltPhoneNumber,
+        degree: degree,
+        school_year: schoolYear,
+        alt_address: altAddress,
+
         department,
         address,
+
         parentName,
         parentAddress,
         parentRelationship,
         parentPhone: formattedParentPhoneNumber,
+
+        parentAltPhone: formattedParentAltPhoneNumber,
+        parentAltAddress: parentAltAddress,
       });
 
       // Show success toast
@@ -150,10 +171,19 @@ const UserAccounts = ({ users }) => {
     setEmail(user.email);
     setPassword(user.password);
     setAccountId(user.account_id);
+    setAltPhoneNumber(user.alt_phone_number);
+    setAltAddress(user.alt_address);
+    setDegree(user.degree);
+    setSchoolYear(user.school_year);
+
     setDepartment(user.department);
     setPhoneNumber(user.phone_number);
     setAddress(user.address);
-    setParentAddress(userParent.address)
+    setParentAddress(userParent.address);
+
+    setParentAltAddress(userParent.alt_address);
+    setParentAltPhone(userParent.alt_phone);
+
     setParentName(userParent.name);
     setParentRelationship(userParent.parentRelationship);
     setParentPhone(userParent.phone);
@@ -167,7 +197,7 @@ const UserAccounts = ({ users }) => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
-  console.log(users)
+  console.log(users);
   return (
     <div className="admin-accounts">
       <h2>User Accounts</h2>
@@ -261,6 +291,72 @@ const UserAccounts = ({ users }) => {
                       />
                     </div>
                     <div className="form-group">
+                      <label htmlFor="schoolYear">School Year</label>
+                      <select
+                        id="schoolYear"
+                        value={schoolYear}
+                        onChange={(e) => setSchoolYear(e.target.value)}
+                        required
+                      >
+                        <option value="" disabled>
+                          Year
+                        </option>
+                        <option value="1st ">1st Year</option>
+                        <option value="2nd ">2nd Year</option>
+                        <option value="3rd ">3nd Year</option>
+                        <option value="4th ">4st Year</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="user-info">
+                    <div className="form-group">
+                      <label htmlFor="degree">Degree</label>
+                      <select
+                        id="degree"
+                        value={degree}
+                        onChange={(e) => setDegree(e.target.value)}
+                        required
+                      >
+                        <option value="" disabled>
+                          Select a Degree
+                        </option>
+                        <option value="Bachelor of Science in Information Technology">
+                          Bachelor of Science in Information Technology
+                        </option>
+                        <option value="Bachelor of Science in Civil Engineering">
+                          Bachelor of Science in Civil Engineering
+                        </option>
+                        <option value="Bachelor of Science in Architecture">
+                          Bachelor of Science in Architecture
+                        </option>
+                        <option value="Bachelor of Science in International Travel and Tourism Management">
+                          Bachelor of Science in International Travel and
+                          Tourism Management
+                        </option>
+                        <option value="Bachelor of Science in Business Administration">
+                          Bachelor of Science in Business Administration
+                        </option>
+                        <option value="Bachelor of Secondary Education">
+                          Bachelor of Secondary Education
+                        </option>
+                        <option value="Bachelor of Science in Biochemistry">
+                          Bachelor of Science in Biochemistry
+                        </option>
+                        <option value="Bachelor of Science in Business Administration">
+                          Bachelor of Science in Business Administration
+                        </option>
+                        <option value="Bachelor of Science in Criminology">
+                          Bachelor of Science in Criminology
+                        </option>
+                        <option value="Bachelor of Science in Marine Engineering">
+                          Bachelor of Science in Marine Engineering
+                        </option>
+                        <option value="Bachelor of Science in Nursing">
+                          Bachelor of Science in Nursing
+                        </option>
+                      </select>
+                    </div>
+                    <div className="form-group">
                       <label htmlFor="department">Department</label>
                       <select
                         id="department"
@@ -295,6 +391,19 @@ const UserAccounts = ({ users }) => {
                       />
                     </div>
                     <div className="form-group">
+                      <label htmlFor="phoneSecondaryNumber">
+                        Secondary Phone Number
+                      </label>
+                      <input
+                        type="text"
+                        id="phoneSecondaryNumber"
+                        placeholder="Secondary Phone Number"
+                        value={altPhoneNumber}
+                        onChange={(e) => setAltPhoneNumber(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
                       <label htmlFor="address">User's Full Address</label>
                       <input
                         type="text"
@@ -304,7 +413,22 @@ const UserAccounts = ({ users }) => {
                         required
                       />
                     </div>
+                    <div className="form-group">
+                      <label htmlFor="Secondaryaddress">
+                        Secondary Address
+                      </label>
+                      <input
+                        type="text"
+                        id="Secondaryaddress"
+                        placeholder="Address"
+                        value={altAddress}
+                        onChange={(e) => setAltAddress(e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
+
+                  {/* {parent} */}
                   <div className="parent-info">
                     <h3>Parent Information</h3>
                     <div className="form-group">
@@ -328,6 +452,20 @@ const UserAccounts = ({ users }) => {
                         required
                       />
                     </div>
+
+                    <div className="form-group">
+                      <label htmlFor="parentAltPhone">
+                        Secondary Phone Number
+                      </label>
+                      <input
+                        type="text"
+                        id="parentAltPhone"
+                        placeholder="Secondary Phone Number"
+                        value={parentAltPhone}
+                        onChange={(e) => setParentAltPhone(e.target.value)}
+                        required
+                      />
+                    </div>
                     <div className="form-group">
                       <label htmlFor="parentAddress">Parent's Address</label>
                       <input
@@ -335,6 +473,19 @@ const UserAccounts = ({ users }) => {
                         id="parentAddress"
                         value={parentAddress}
                         onChange={(e) => setParentAddress(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="parentAltAddress">
+                        Secondary Parent's Address
+                      </label>
+                      <input
+                        type="text"
+                        id="parentAltAddress"
+                        placeholder="Secondary Address"
+                        value={parentAltAddress}
+                        onChange={(e) => setParentAltAddress(e.target.value)}
                         required
                       />
                     </div>
@@ -356,15 +507,15 @@ const UserAccounts = ({ users }) => {
                     </div>
                   </div>
 
-                  <button type="submit" className="update-btn">
-                    Update
-                  </button>
                   <button
                     type="button"
                     className="cancel-btn"
                     onClick={closeUpdateModal}
                   >
                     Cancel
+                  </button>
+                  <button type="submit" className="update-btn">
+                    Update
                   </button>
                 </div>
               </form>
@@ -393,7 +544,13 @@ const UserAccounts = ({ users }) => {
                   <p className="admin-phone">{user.account_id}</p>
                   <p className="admin-phone">{user.department}</p>
                   <p className="admin-phone">{user.phone_number}</p>
+                  <p className="admin-phone">
+                    {user.alt_phone_number || "No secondary number"}
+                  </p>
                   <p className="admin-phone">{user.address}</p>
+                  <p className="admin-phone">
+                    {user.alt_address || "No secondary address"}
+                  </p>
                 </div>
                 <div className="parents-info">
                   {userParent ? (
@@ -401,6 +558,13 @@ const UserAccounts = ({ users }) => {
                       <h3 className="admin-name">{userParent.relationship}</h3>
                       <h3 className="admin-phone">{userParent.name}</h3>
                       <p className="admin-phone">{userParent.phone}</p>
+                      <p className="admin-phone">{userParent.address}</p>
+                      <p className="admin-phone">
+                        {userParent.alt_phone || "No secondary number"}
+                      </p>
+                      <p className="admin-phone">
+                        {userParent.alt_address || "No secondary address"}
+                      </p>
                     </div>
                   ) : (
                     <p className="no-admins">No parents found.</p>

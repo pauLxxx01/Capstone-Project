@@ -45,6 +45,8 @@ const { verifyToken, sendingToken } = require("../controller/otpController");
 const path = require("path");
 const multer = require("multer");
 const { sendPush } = require("../controller/notificationController");
+const { sendFeedback } = require("../controller/feedbackController");
+const { sendAnnouncement } = require("../controller/announcementController");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -110,9 +112,14 @@ router.get("/admin/responder/getResponder", getResponder);
 router.put("/admin/responder/update/:id", updateResponder);
 router.delete("/admin/responder/delete/:id", deleteResponder);
 
-
-
 //sending to mobile
 router.post('/push-notification', sendPush);
+
+//feedbacks
+router.post('/user/feedback', sendFeedback);
+
+
+//announcement
+router.post('/send-announcement', sendAnnouncement);
 
 module.exports = router;

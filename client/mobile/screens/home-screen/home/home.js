@@ -46,6 +46,8 @@ export default function Homepage({ navigation }) {
   const horizontalScrollRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
 
+  console.log("state: ",state);
+
   // Function to handle refresh
   const onRefresh = async () => {
     setRefreshing(true);
@@ -115,6 +117,7 @@ export default function Homepage({ navigation }) {
     const matchingEmergency = emergencies.find(
       (emergency) => emergency.type === selectedAlert
     );
+    console.log("selected alert: " + selectedAlert)
 
     if (matchingEmergency) {
       setEmergencyImg(matchingEmergency.img);
@@ -172,7 +175,7 @@ export default function Homepage({ navigation }) {
               </TouchableOpacity>
               {/* Greetings for user */}
               <View style={styles.headerContent}>
-                <Text style={styles.greeting}>{state.user.name}</Text>
+                <Text style={styles.greeting}>{state.user.account_id}</Text>
                 <Text style={styles.subGreeting}>
                   I am ready to help you, ka - AGAPAY!
                 </Text>

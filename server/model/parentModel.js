@@ -10,11 +10,17 @@ const parentSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: [true, "Please add userId"],
+      required: [true, "Please add phone number"],
+    },
+    alt_phone: {
+      type: String,
     },
     address: {
       type: String,
       trim: true,
+    },
+    alt_address: {
+      type: String,
     },
     relationship: {
       type: String,

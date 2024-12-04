@@ -12,8 +12,7 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import { RadioButton } from "react-native-paper";
 import { Audio } from "expo-av";
-import Icon from "react-native-vector-icons/Ionicons";
-import * as Notifications from "expo-notifications";
+
 
 const { width, height } = Dimensions.get("window");
 

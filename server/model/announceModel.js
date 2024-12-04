@@ -1,9 +1,36 @@
 const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
-const announcementSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
+const announcementSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+    },
+    description: {
+      type: String,
+    },
+    date: {
+      type: String,
+    },
+    department: {
+      type: String,
+    },
+    duration: {
+      type: String,
+    },
+    topic: {
+      type: String,
+    },
+    pinned: {
+      type: Boolean,
+    },
+    creator: {
+      type: Schema.Types.ObjectId,
+      ref: "Admin",
+    }
+  },
+  {
+    timestamps: true,
+  }
+);
+module.exports = mongoose.model("Announcement", announcementSchema);

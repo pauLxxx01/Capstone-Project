@@ -31,7 +31,7 @@ const sendReportToAdmin = async (req, res) => {
         .send({ success: false, message: "Message is required" });
     }
 
-    const user = await userModel.findById(senderId); // Corrected this line
+    const user = await userModel.findById(senderId); 
     if (!user) {
       return res.status(404).send({
         success: false,

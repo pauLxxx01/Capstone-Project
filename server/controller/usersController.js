@@ -7,20 +7,30 @@ const JWT = require("jsonwebtoken");
 const updateAccounts = async (req, res) => {
   try {
     const {
-      // for user
+    //for user
       role,
       name,
       email,
       password,
       account_id,
       phone_number,
+
+      alt_phone_number,
+      degree,
+      school_year,
+      alt_address,
+
       department,
       address,
+      
       // for parent
       parentName,
       parentAddress,
       parentPhone,
       parentRelationship,
+
+      parentAltPhone,
+      parentAltAddress
     } = req.body;
 
     const id = req.params.id; // Get the user ID from the request parameters
@@ -47,9 +57,13 @@ const updateAccounts = async (req, res) => {
       name,
       email,
       account_id,
-      address,
-      department,
       phone_number,
+      alt_phone_number,
+      degree,
+      school_year,
+      department,
+      address,
+      alt_address,
     };
 
     if (password) {
@@ -71,8 +85,12 @@ const updateAccounts = async (req, res) => {
     const parentUpdateData = {
       name: parentName,
       phone: parentPhone,
-      relationship: parentRelationship,
+      alt_phone: parentAltPhone,
       address: parentAddress,
+      alt_address: parentAltAddress,
+      relationship: parentRelationship,
+
+
       children: updatedUser._id,  // Ensure user is linked to parent
     };
 
@@ -126,6 +144,12 @@ const registerUserController = async (req, res) => {
       password,
       account_id,
       phone_number,
+
+      alt_phone_number,
+      degree,
+      school_year,
+      alt_address,
+
       department,
       address,
       
@@ -134,6 +158,10 @@ const registerUserController = async (req, res) => {
       parentAddress,
       parentPhone,
       parentRelationship,
+
+      parentAltPhone,
+      parentAltAddress
+      
     } = req.body;
 
     // Validate required fields
@@ -143,6 +171,8 @@ const registerUserController = async (req, res) => {
       "parentAddress",
       "parentPhone",
       "parentRelationship",
+      "parentAltPhone",
+      "parentAltAddress",
       // for user
       "role",
       "name",
@@ -152,6 +182,11 @@ const registerUserController = async (req, res) => {
       "phone_number",
       "department",
       "address",
+      "alt_phone_number",
+      "degree",
+      "school_year",
+      "alt_address",
+
     ];
 
     const missingFields = requiredFields.filter((field) => !req.body[field]);
@@ -189,8 +224,12 @@ const registerUserController = async (req, res) => {
       password: hashedPassword,
       account_id,
       phone_number,
+      alt_phone_number,
+      degree,
+      school_year,
       department,
       address,
+      alt_address,
     });
 
     //saving user
@@ -200,7 +239,9 @@ const registerUserController = async (req, res) => {
     const newParent = new parentModel({
       name: parentName,
       phone: parentPhone,
+      alt_phone: parentAltPhone,
       address: parentAddress,
+      alt_address: parentAltAddress,
       relationship: parentRelationship,
       children: savedUser._id,
     });

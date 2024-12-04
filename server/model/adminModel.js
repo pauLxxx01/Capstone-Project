@@ -37,6 +37,12 @@ const adminSchema = new mongoose.Schema(
       type: String,
       default: "admin",
     },
+    announcement: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Announcement",
+      },
+    ],
     verificationToken: String,
     verificationTokenExpiresAt: Date,
   },

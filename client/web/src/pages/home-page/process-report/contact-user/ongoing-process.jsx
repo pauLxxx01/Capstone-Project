@@ -23,16 +23,20 @@ const Ongoing = () => {
   const { id } = useParams(); // Access the dynamic parameter
   const location = useLocation();
   const passedId = location.state?.id;
+  const [message, setMessage] = useState([])
+  
 
-  console.log("passed id: " + passedId);
+  console.log("passed Id: ",JSON.stringify(message))
+
   const [parents, setParents] = useState([]);
   const [progress, setProgress] = useState("");
+
 
   //error
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  if (!passedId ) {
+  if (!passedId) {
     return <div>No datass available.</div>;
   }
 
@@ -132,6 +136,10 @@ const Ongoing = () => {
         console.log(responderResponse.data.data, "responder response");
         setResponder(responderResponse.data.data);
 
+        const messageResponse = await axios.get(`/user/message/specific/${id}`)
+        console.log("message: ",messageResponse.data.data)
+        setMessage(messageResponse.data.data)
+
         // Load saved step and process info from local storage based on ID
         const savedStep = localStorage.getItem(`currentStep_${id}`);
         const savedData = JSON.parse(localStorage.getItem(`processInfo_${id}`));
@@ -181,24 +189,35 @@ const Ongoing = () => {
 
   const handlePrevious = () => {
     setDirection("previous");
-    setOpenDialog(true); // Open dialog to confirm action
+    setOpenDialog(true);
   };
 
   const handleNext = () => {
     setDirection("next");
-    setOpenDialog(true); // Open dialog to confirm action
+    setOpenDialog(true);
   };
   const handleCancel = () => {
-    setOpenDialog(false); 
-  }
+    setOpenDialog(false);
+  };
   const handleUpdate = async (id) => {
-    console.log(id);
+    
     try {
+
       const data = {
         percentage: progress,
         userId: passedId._id,
-        id: id
+        id: id,
       };
+      const sendNotif = {
+        to: `${passedId.pushToken}`,
+        title: "New Notification",
+        body: "Tap to see details!",
+        data: {
+          screen: "ShowProgress",
+          details: message
+        },
+      };
+      await axios.post("/push-notification", sendNotif);
       await axios.put(`/user/message/update/${id}`, data);
 
       if (direction == "next" && currentStep < 5) {

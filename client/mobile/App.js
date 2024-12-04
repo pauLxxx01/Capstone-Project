@@ -7,11 +7,15 @@ import Login from "./screens/landing-screen/login-screen/login";
 
 import Homepage from "./screens/home-screen/home/home";
 
+import ShowProgress from './screens/home-screen/progress-report/view-report/progress';
 import Progress from "./screens/home-screen/progress-report/sending-report/report";
 import Camera from "./screens/camera/camera";
+import Message from "./screens/home-screen/chat_room/Message"
 
 import Notification from "./screens/menu-bar/Notification";
 import History from "./screens/menu-bar/Transaction";
+import UpdateInfo from './screens/menu-bar/UpdateInfo';
+import Announcement from "./screens/menu-bar/Announcement";
 
 import { AuthProvider } from "./context/authContext";
 import { SocketProvider } from "./context/socketContext";
@@ -36,9 +40,11 @@ export default function App() {
     const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
       console.log(response, "response notif");
       const data = response.notification.request.content.data;
+      const { details } = response.notification.request.content.data
 
       if (data?.screen && navigationRef.current) {
-        navigationRef.current.navigate(data.screen);
+        console.log("Navigating to:", data.screen, "with details:", data.details);
+        navigationRef.current.navigate(data.screen, {details});
       }
     });
 
@@ -79,13 +85,24 @@ export default function App() {
             <Stack.Screen name="Notification" component={Notification} />
             <Stack.Screen name="About" component={About} />
             <Stack.Screen name="Feedback" component={FeedbackComponent} />
-
+            <Stack.Screen name="UpdateInfo" component={UpdateInfo} />
+            <Stack.Screen name="Announcement" component={Announcement} />
             <Stack.Screen name="Transaction" component={History} />
             {/* Report Progress */}
+            <Stack.Screen 
+            name="ShowProgress"
+            component={ShowProgress}
+            options={{ headerShown: false }}
+            />
             <Stack.Screen
               name="Progress"
               component={Progress}
               options={{ headerShown: false }}
+            />
+            <Stack.Screen
+            name="Message" 
+            component={Message}
+            options={{ headerShown: false }}
             />
             <Stack.Screen
               name="Camera"

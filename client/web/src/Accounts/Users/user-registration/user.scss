@@ -1,16 +1,23 @@
 .form-container-user {
   display: flex;
   width: 100%;
+  margin: 0px 42px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
-
+input {
+  padding: 8px;
+}
+.radio-group {
+  display: flex;
+  gap: 16px;
+}
 .user-form {
   background-color: #fff;
   border-radius: 8px;
+  margin-bottom: 32px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
- 
 }
 .header-container {
   display: flex;
@@ -38,29 +45,28 @@ label {
 }
 
 .grid-container {
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   display: grid;
   padding: 24px;
-
 }
-.input{
+.input {
   width: 100%;
-    margin: 0px;
+  margin: 0px;
 }
-select{
+select {
   cursor: pointer;
   width: 100%;
-  padding: 10px;
+  padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   transition: border-color 0.3s;
   &:focus {
-    border-color: #4CAF50; 
+    border-color: #4caf50;
   }
- 
-
 }
-
+.cancel-btn {
+  grid-column: 2;
+}
 
 .user-info,
 .parent-info {
@@ -71,8 +77,8 @@ select{
   margin: 8px 0px; // Space between form groups
 }
 
-.submit-button {
-  grid-column: span 2; // Make the submit button span both columns
+.submit-button-register {
+  grid-column: span 3; // Make the submit button span both columns
   background-color: maroon; // Background color of the button
   color: #fff; // Text color of the button
   border: none; // No border
